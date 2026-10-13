@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import PageLayout from '@/components/layout/PageLayout'
 import BackNav from '@/components/navigation/BackNav'
-import { COMPANY, EQUIPMENT_CATEGORIES, EQUIPMENT_RANGE } from '@/data/content'
+import { EQUIPMENT_CATEGORIES, EQUIPMENT_RANGE } from '@/data/content'
 import { MEDIA } from '@/data/media'
 import LazyVideo from '@/components/LazyVideo'
 import { PROJECT_TYPES, isValidPhone, validateInquiry } from '@/lib/inquiry'
@@ -14,6 +14,7 @@ export default function ProductsEquipmentPage() {
   const [inquiryResult, setInquiryResult] = useState<{ referenceId?: string; emailStatus?: string } | null>(null)
   const [honeypot, setHoneypot] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
+  const idempotencyKey = useRef(crypto.randomUUID())
   const [formData, setFormData] = useState({
     name: '',
     company: '',
@@ -27,6 +28,7 @@ export default function ProductsEquipmentPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (isSubmitting) return
     setErrorMessage('')
 
     if (!isValidPhone(formData.phone.trim())) {
@@ -51,7 +53,7 @@ export default function ProductsEquipmentPage() {
         body: JSON.stringify({
           ...formData,
           source: 'Equipment inquiry form',
-          idempotencyKey: crypto.randomUUID(),
+          idempotencyKey: idempotencyKey.current,
           faxNumber: honeypot,
         }),
       })
@@ -62,7 +64,7 @@ export default function ProductsEquipmentPage() {
       } else {
         setErrorMessage(data.error || 'Failed to submit the inquiry.')
       }
-    } catch (err) {
+    } catch {
       setErrorMessage('Network error. Please try again or reach LDS directly.')
     } finally {
       setIsSubmitting(false)
@@ -227,6 +229,16 @@ export default function ProductsEquipmentPage() {
             <div className="vendor-quote-card" style={{ background: 'var(--bg-light)', border: '1px solid var(--line-gold)', padding: 'clamp(24px, 3.5vw, 40px)', position: 'sticky', top: '100px' }}>
               {!formSubmitted ? (
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <input
+                    type="text"
+                    name="faxNumber"
+                    value={honeypot}
+                    onChange={(e) => setHoneypot(e.target.value)}
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                    style={{ position: 'absolute', left: '-9999px', height: 0, width: 0, opacity: 0 }}
+                  />
                   <div>
                     <div className="section-label" style={{ marginBottom: '6px' }}>
                       <span className="section-label-bullet" />

@@ -66,6 +66,13 @@ export default function QuoteModal() {
     }
   }, [])
 
+  const handleClose = () => {
+    setIsOpen(false)
+    if (window.location.hash === '#quote' || window.location.hash === '#contact') {
+      window.history.replaceState(null, '', window.location.pathname + window.location.search)
+    }
+  }
+
   // Lock body scroll and handle ESC key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -87,15 +94,9 @@ export default function QuoteModal() {
     }
   }, [isOpen])
 
-  const handleClose = () => {
-    setIsOpen(false)
-    if (window.location.hash === '#quote' || window.location.hash === '#contact') {
-      window.history.replaceState(null, '', window.location.pathname + window.location.search)
-    }
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (isSubmitting) return
     setErrorMessage('')
 
     if (!formData.name.trim()) {

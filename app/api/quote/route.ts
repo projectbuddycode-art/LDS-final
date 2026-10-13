@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import fs from 'fs'
+import os from 'os'
 import path from 'path'
 import { randomUUID } from 'crypto'
 import nodemailer from 'nodemailer'
@@ -16,12 +17,11 @@ const recentRequests = new Map<string, number[]>()
 
 function recipientsFromEnv() {
   const configured = process.env.LDS_INQUIRY_TO || process.env.LDS_NOTIFICATION_EMAIL || ''
-  const parsed = configured
+  const extra = configured
     .split(',')
     .map((item) => item.trim().toLowerCase())
     .filter((item) => item.includes('@'))
-  const unique = Array.from(new Set(parsed.length > 0 ? parsed : [...DEFAULT_INQUIRY_RECIPIENTS]))
-  return unique
+  return Array.from(new Set([...DEFAULT_INQUIRY_RECIPIENTS, ...extra]))
 }
 
 function clientKey(request: Request) {
@@ -42,7 +42,15 @@ function isRateLimited(key: string) {
 }
 
 function leadsFilePath() {
-  return path.join(process.cwd(), 'data', 'leads.json')
+  const preferred = path.join(process.cwd(), 'data', 'leads.json')
+  try {
+    const dir = path.dirname(preferred)
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
+    fs.accessSync(dir, fs.constants.W_OK)
+    return preferred
+  } catch {
+    return path.join(os.tmpdir(), 'lds-leads.json')
+  }
 }
 
 function readLeads(): InquiryRecord[] {
@@ -157,17 +165,23 @@ function publicResult(record: InquiryRecord, duplicate = false) {
 
 export async function POST(request: Request) {
   try {
+    let body: InquiryInput
+    try {
+      body = await request.json() as InquiryInput
+    } catch {
+      return NextResponse.json({ error: 'The request could not be read. Please try again.' }, { status: 400 })
+    }
+
+    const validated = validateInquiry(body)
+    if (!validated.ok) {
+      return NextResponse.json({ error: validated.error }, { status: 400 })
+    }
+
     if (isRateLimited(clientKey(request))) {
       return NextResponse.json(
         { error: 'Too many inquiries were submitted. Please wait a few minutes and try again.' },
         { status: 429 }
       )
-    }
-
-    const body = await request.json() as InquiryInput
-    const validated = validateInquiry(body)
-    if (!validated.ok) {
-      return NextResponse.json({ error: validated.error }, { status: 400 })
     }
 
     const leads = readLeads()
@@ -180,7 +194,11 @@ export async function POST(request: Request) {
         const delivery = await deliverToRecipients(existing)
         existing.emailStatus = delivery.emailStatus
         existing.emailDeliveries = delivery.emailDeliveries
-        writeLeads(leads)
+        try {
+          writeLeads(leads)
+        } catch {
+          console.error(`[LDS Inquiry ${existing.referenceId}] Could not update saved inquiry after retry.`)
+        }
         return NextResponse.json(publicResult(existing, true))
       }
     }
@@ -196,14 +214,10 @@ export async function POST(request: Request) {
       emailDeliveries: [],
     }
 
-    const delivery = await deliverToRecipients(record)
-    record.emailStatus = delivery.emailStatus
-    record.emailDeliveries = delivery.emailDeliveries
-
     try {
       leads.unshift(record)
       writeLeads(leads)
-    } catch (error) {
+    } catch {
       console.error(`[LDS Inquiry ${record.referenceId}] Could not save inquiry record.`)
       return NextResponse.json(
         { error: 'The inquiry could not be saved. Please try again.' },
@@ -211,9 +225,18 @@ export async function POST(request: Request) {
       )
     }
 
+    const delivery = await deliverToRecipients(record)
+    record.emailStatus = delivery.emailStatus
+    record.emailDeliveries = delivery.emailDeliveries
+    try {
+      writeLeads(leads)
+    } catch {
+      console.error(`[LDS Inquiry ${record.referenceId}] Inquiry was saved but delivery status could not be updated.`)
+    }
+
     console.log(`[LDS Inquiry ${record.referenceId}] accepted; email status: ${record.emailStatus}`)
     return NextResponse.json(publicResult(record))
-  } catch (error) {
+  } catch {
     console.error('[LDS Inquiry] Request could not be processed.')
     return NextResponse.json(
       { error: 'Failed to process the inquiry. Please try again or contact LDS directly.' },
