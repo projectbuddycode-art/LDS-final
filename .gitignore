@@ -46,3 +46,6 @@ next-env.d.ts
 # media backups
 /public/media/backup/
 /scratch/
+
+# inquiry records contain visitor personal data
+/data/leads.json

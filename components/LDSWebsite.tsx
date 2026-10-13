@@ -96,7 +96,7 @@ export default function LDSWebsite() {
             <EquipmentSection />
           </SectionErrorBoundary>
 
-          {/* ─ 08 Transmission Lines ──────── */}
+          {/* ─ 08 Substations ─────────────── */}
           <SectionErrorBoundary name="Transmission">
             <TransmissionSection />
           </SectionErrorBoundary>

@@ -15,7 +15,7 @@ export default function ClientsPartnershipsPage() {
           <BackNav fallbackHref="/" label="Home" />
           <div className="section-label">
             <span className="section-label-bullet" />
-            <span className="t-label">OUR CLIENTS &amp; RELATIONSHIPS</span>
+            <span className="t-label">Our trusted vendors and collaborators</span>
           </div>
           <h1 className="t-headline" style={{ marginBottom: '24px', fontSize: 'clamp(32px, 5vw, 64px)', lineHeight: 1.05, textWrap: 'balance' }}>
             Trusted Relationships{' '}

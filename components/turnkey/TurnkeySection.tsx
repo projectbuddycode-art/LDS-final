@@ -47,6 +47,7 @@ const CAPABILITY_GROUPS = [
     title: 'Electrical Equipment',
     items: [
       'LT MCC / PCC',
+      'Panels',
       'Power factor improvement capacitor panels',
       'AMF panels',
       'Instrumentation panels',
@@ -57,7 +58,7 @@ const CAPABILITY_GROUPS = [
       'LT distribution boards',
       'Control desks',
       'LT bus ducts',
-      'Transformer and DG panels',
+      'DG Synchronising Panels',
       'Switchboards',
       'LT feeder pillar boards'
     ],

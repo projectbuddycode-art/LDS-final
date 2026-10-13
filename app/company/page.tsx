@@ -371,7 +371,7 @@ export default function CompanyPage() {
                 <div>
                   <div style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)' }}>{leader.name}</div>
                   <div style={{ fontSize: '12px', fontWeight: 500, color: 'var(--accent-gold)', letterSpacing: '0.10em', textTransform: 'uppercase', marginTop: '4px', marginBottom: '12px' }}>
-                    {leader.title} · Since {leader.since}
+                    {leader.id === 'md' ? leader.title : `${leader.title} · Since ${leader.since}`}
                   </div>
                   <p className="t-body" style={{ fontSize: '13.5px', lineHeight: 1.65, margin: 0 }}>
                     {leader.bio}

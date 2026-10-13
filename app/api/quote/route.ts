@@ -1,149 +1,227 @@
 import { NextResponse } from 'next/server'
 import fs from 'fs'
 import path from 'path'
+import { randomUUID } from 'crypto'
 import nodemailer from 'nodemailer'
+import {
+  DEFAULT_INQUIRY_RECIPIENTS,
+  InquiryInput,
+  InquiryRecord,
+  validateInquiry,
+} from '@/lib/inquiry'
 
-// Centralized verified LDS notification email recipients
-const DEFAULT_LDS_EMAILS = 'lukhdatar_sons@rediffmail.com, lukhdatar6sons@gmail.com'
-const NOTIFICATION_EMAIL = process.env.LDS_NOTIFICATION_EMAIL || process.env.LDS_TEAM_EMAIL || DEFAULT_LDS_EMAILS
+const RATE_WINDOW_MS = 10 * 60 * 1000
+const RATE_LIMIT = 5
+const recentRequests = new Map<string, number[]>()
 
-interface LeadData {
-  name: string
-  company?: string
-  phone: string
-  email: string
-  projectType?: string
-  location?: string
-  requirement: string
-  message?: string
-  source?: string
-  conversationSummary?: string
-  conversationLog?: string[]
+function recipientsFromEnv() {
+  const configured = process.env.LDS_INQUIRY_TO || process.env.LDS_NOTIFICATION_EMAIL || ''
+  const parsed = configured
+    .split(',')
+    .map((item) => item.trim().toLowerCase())
+    .filter((item) => item.includes('@'))
+  const unique = Array.from(new Set(parsed.length > 0 ? parsed : [...DEFAULT_INQUIRY_RECIPIENTS]))
+  return unique
+}
+
+function clientKey(request: Request) {
+  const forwarded = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+  return forwarded || request.headers.get('x-real-ip') || 'local'
+}
+
+function isRateLimited(key: string) {
+  const now = Date.now()
+  const stamps = (recentRequests.get(key) || []).filter((stamp) => now - stamp < RATE_WINDOW_MS)
+  if (stamps.length >= RATE_LIMIT) {
+    recentRequests.set(key, stamps)
+    return true
+  }
+  stamps.push(now)
+  recentRequests.set(key, stamps)
+  return false
+}
+
+function leadsFilePath() {
+  return path.join(process.cwd(), 'data', 'leads.json')
+}
+
+function readLeads(): InquiryRecord[] {
+  const file = leadsFilePath()
+  if (!fs.existsSync(file)) return []
+  try {
+    const parsed = JSON.parse(fs.readFileSync(file, 'utf-8'))
+    return Array.isArray(parsed) ? parsed : []
+  } catch {
+    return []
+  }
+}
+
+function writeLeads(leads: InquiryRecord[]) {
+  const file = leadsFilePath()
+  const dir = path.dirname(file)
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
+  fs.writeFileSync(file, JSON.stringify(leads, null, 2), 'utf-8')
+}
+
+function formatWhen(date: Date) {
+  const display = new Intl.DateTimeFormat('en-IN', {
+    dateStyle: 'full',
+    timeStyle: 'long',
+    timeZone: 'Asia/Kolkata',
+  }).format(date)
+  return { iso: date.toISOString(), display: `${display} (Asia/Kolkata)` }
+}
+
+function emailBody(record: InquiryRecord) {
+  return [
+    'NEW WEBSITE INQUIRY — LUKHDATAR & SONS',
+    '',
+    `Full Name: ${record.name}`,
+    `Company Name: ${record.company}`,
+    `Phone Number: ${record.phone}`,
+    `Email Address: ${record.email}`,
+    `Project Type: ${record.projectType}`,
+    `Project Location: ${record.location}`,
+    `Requirement / Project Details: ${record.requirement}`,
+    `Additional Message: ${record.message}`,
+    `Submission Source: ${record.source}`,
+    `Submission Date and Time: ${record.submittedAtDisplay}`,
+    `Inquiry Reference ID: ${record.referenceId}`,
+    record.conversationSummary ? `\nConversation Summary:\n${record.conversationSummary}` : '',
+  ].filter(Boolean).join('\n')
+}
+
+async function deliverToRecipients(record: InquiryRecord): Promise<{
+  emailStatus: InquiryRecord['emailStatus']
+  emailDeliveries: InquiryRecord['emailDeliveries']
+}> {
+  const recipients = recipientsFromEnv()
+  if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    console.error(`[LDS Inquiry ${record.referenceId}] Email not sent. SMTP is not configured.`)
+    return {
+      emailStatus: 'pending_configuration' as const,
+      emailDeliveries: recipients.map((recipient) => ({
+        recipient,
+        status: 'skipped' as const,
+        error: 'SMTP is not configured',
+      })),
+    }
+  }
+
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT) || 587,
+    secure: Number(process.env.SMTP_PORT) === 465,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  })
+
+  const deliveries = await Promise.all(recipients.map(async (recipient) => {
+    try {
+      await transporter.sendMail({
+        from: process.env.SMTP_FROM || `"LDS Website" <${process.env.SMTP_USER}>`,
+        to: recipient,
+        replyTo: record.email,
+        subject: `New LDS Website Inquiry — ${record.name}`,
+        text: emailBody(record),
+      })
+      return { recipient, status: 'sent' as const }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Delivery failed'
+      console.error(`[LDS Inquiry ${record.referenceId}] Delivery failed for one recipient: ${message}`)
+      return { recipient, status: 'failed' as const, error: message }
+    }
+  }))
+
+  const sent = deliveries.filter((item) => item.status === 'sent').length
+  const emailStatus: InquiryRecord['emailStatus'] = sent === deliveries.length ? 'sent' : sent > 0 ? 'partial' : 'failed'
+  return { emailStatus, emailDeliveries: deliveries }
+}
+
+function publicResult(record: InquiryRecord, duplicate = false) {
+  const delivered = record.emailStatus === 'sent'
+  return {
+    success: true,
+    accepted: true,
+    duplicate,
+    referenceId: record.referenceId,
+    emailStatus: record.emailStatus,
+    notified: delivered,
+    message: delivered
+      ? 'Inquiry accepted and notification sent to the LDS team.'
+      : 'Inquiry saved. Email notification to the LDS team is not confirmed.',
+  }
 }
 
 export async function POST(request: Request) {
   try {
-    const body: LeadData = await request.json()
-
-    // 1. Validation
-    if (!body.name || !body.name.trim()) {
-      return NextResponse.json({ error: 'Full name is required' }, { status: 400 })
-    }
-    if (!body.phone || !body.phone.trim()) {
-      return NextResponse.json({ error: 'Phone number is required' }, { status: 400 })
-    }
-    if (!body.email || !body.email.trim()) {
-      return NextResponse.json({ error: 'Email address is required' }, { status: 400 })
-    }
-    if (!body.requirement || !body.requirement.trim()) {
-      return NextResponse.json({ error: 'Project requirement details are required' }, { status: 400 })
+    if (isRateLimited(clientKey(request))) {
+      return NextResponse.json(
+        { error: 'Too many inquiries were submitted. Please wait a few minutes and try again.' },
+        { status: 429 }
+      )
     }
 
-    const timestamp = new Date().toISOString()
-    const leadId = `LDS-${Date.now()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`
-    const source = body.source || 'Website Quote Form'
-
-    const leadRecord = {
-      id: leadId,
-      name: body.name.trim(),
-      company: body.company?.trim() || 'N/A',
-      phone: body.phone.trim(),
-      email: body.email.trim(),
-      projectType: body.projectType || 'General Electrical Work',
-      location: body.location?.trim() || 'N/A',
-      requirement: body.requirement.trim(),
-      message: body.message?.trim() || 'N/A',
-      source,
-      conversationSummary: body.conversationSummary || undefined,
-      conversationLog: body.conversationLog || undefined,
-      timestamp,
-      status: 'NEW',
+    const body = await request.json() as InquiryInput
+    const validated = validateInquiry(body)
+    if (!validated.ok) {
+      return NextResponse.json({ error: validated.error }, { status: 400 })
     }
 
-    // 2. Persist Lead to Database / Storage File
-    try {
-      const dataDir = path.join(process.cwd(), 'data')
-      if (!fs.existsSync(dataDir)) {
-        fs.mkdirSync(dataDir, { recursive: true })
-      }
-      const leadsFile = path.join(dataDir, 'leads.json')
-      let leads: any[] = []
-      if (fs.existsSync(leadsFile)) {
-        const fileContent = fs.readFileSync(leadsFile, 'utf-8')
-        try {
-          leads = JSON.parse(fileContent)
-          if (!Array.isArray(leads)) leads = []
-        } catch {
-          leads = []
+    const leads = readLeads()
+    if (validated.value.idempotencyKey) {
+      const existing = leads.find((lead) => lead.idempotencyKey === validated.value.idempotencyKey)
+      if (existing) {
+        if (existing.emailStatus === 'sent') {
+          return NextResponse.json(publicResult(existing, true))
         }
+        const delivery = await deliverToRecipients(existing)
+        existing.emailStatus = delivery.emailStatus
+        existing.emailDeliveries = delivery.emailDeliveries
+        writeLeads(leads)
+        return NextResponse.json(publicResult(existing, true))
       }
-      leads.unshift(leadRecord)
-      fs.writeFileSync(leadsFile, JSON.stringify(leads, null, 2), 'utf-8')
-    } catch (saveErr) {
-      console.error('[LDS Lead Store Error]:', saveErr)
     }
 
-    // 3. Format Lead Email Notification
-    const isBot = source.toLowerCase().includes('bot')
-    const emailSubject = isBot ? 'New LDS Lead — Ask LDS Bot' : 'New LDS Website Quote Request'
-
-    const emailBodyText = isBot
-      ? `NEW LDS WEBSITE LEAD\n\nSource:\n${source}\n\nName:\n${leadRecord.name}\nCompany:\n${leadRecord.company}\nPhone:\n${leadRecord.phone}\nEmail:\n${leadRecord.email}\n\nProject Type:\n${leadRecord.projectType}\nProject Location:\n${leadRecord.location}\n\nRequirement:\n${leadRecord.requirement}\n\nConversation Summary:\n${leadRecord.conversationSummary || 'Inquiry submitted via Ask LDS Bot'}\n\nSubmitted:\n${timestamp}`
-      : `New Quote Request\n\nName:\n${leadRecord.name}\nCompany:\n${leadRecord.company}\nPhone:\n${leadRecord.phone}\nEmail:\n${leadRecord.email}\nProject Type:\n${leadRecord.projectType}\nProject Location:\n${leadRecord.location}\nRequirement:\n${leadRecord.requirement}\nMessage:\n${leadRecord.message}\n\nSource:\n${source}\n\nSubmission Time:\n${timestamp}`
-
-    // 4. Send Email to LDS Team
-    if (process.env.SMTP_HOST && process.env.SMTP_USER) {
-      try {
-        const transporter = nodemailer.createTransport({
-          host: process.env.SMTP_HOST,
-          port: Number(process.env.SMTP_PORT) || 587,
-          secure: Number(process.env.SMTP_PORT) === 465,
-          auth: {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASS,
-          },
-        })
-
-        await transporter.sendMail({
-          from: process.env.SMTP_FROM || `"LDS Website Notification" <${process.env.SMTP_USER}>`,
-          to: NOTIFICATION_EMAIL,
-          subject: emailSubject,
-          text: emailBodyText,
-        })
-        console.log(`[LDS Email Sent Successfully] To: ${NOTIFICATION_EMAIL}, Subject: ${emailSubject}`)
-      } catch (mailErr) {
-        console.error('[LDS Email Dispatch Failed]:', mailErr)
-      }
-    } else {
-      // Local development or unconfigured SMTP: log notification clearly
-      console.log(`\n==================================================\n[LDS TEAM EMAIL NOTIFICATION SIMULATION]\nTO: ${NOTIFICATION_EMAIL}\nSUBJECT: ${emailSubject}\n\n${emailBodyText}\n==================================================\n`)
+    const when = formatWhen(new Date())
+    const record: InquiryRecord = {
+      referenceId: `LDS-${when.iso.slice(0, 10).replace(/-/g, '')}-${randomUUID().slice(0, 8).toUpperCase()}`,
+      ...validated.value,
+      submittedAt: when.iso,
+      submittedAtDisplay: when.display,
+      status: 'accepted',
+      emailStatus: 'pending_configuration',
+      emailDeliveries: [],
     }
 
-    return NextResponse.json({
-      success: true,
-      message: 'Enquiry received successfully by LDS team.',
-      leadId: leadRecord.id,
-      timestamp: leadRecord.timestamp,
-    })
-  } catch (error: any) {
-    console.error('[LDS Quote API Error]:', error)
+    const delivery = await deliverToRecipients(record)
+    record.emailStatus = delivery.emailStatus
+    record.emailDeliveries = delivery.emailDeliveries
+
+    try {
+      leads.unshift(record)
+      writeLeads(leads)
+    } catch (error) {
+      console.error(`[LDS Inquiry ${record.referenceId}] Could not save inquiry record.`)
+      return NextResponse.json(
+        { error: 'The inquiry could not be saved. Please try again.' },
+        { status: 500 }
+      )
+    }
+
+    console.log(`[LDS Inquiry ${record.referenceId}] accepted; email status: ${record.emailStatus}`)
+    return NextResponse.json(publicResult(record))
+  } catch (error) {
+    console.error('[LDS Inquiry] Request could not be processed.')
     return NextResponse.json(
-      { error: 'Failed to process quotation request. Please try again or contact LDS directly.' },
+      { error: 'Failed to process the inquiry. Please try again or contact LDS directly.' },
       { status: 500 }
     )
   }
 }
 
 export async function GET() {
-  try {
-    const leadsFile = path.join(process.cwd(), 'data', 'leads.json')
-    if (fs.existsSync(leadsFile)) {
-      const data = fs.readFileSync(leadsFile, 'utf-8')
-      const leads = JSON.parse(data)
-      return NextResponse.json({ leads })
-    }
-    return NextResponse.json({ leads: [] })
-  } catch (err) {
-    return NextResponse.json({ leads: [] })
-  }
+  return NextResponse.json({ error: 'Method not allowed' }, { status: 405 })
 }

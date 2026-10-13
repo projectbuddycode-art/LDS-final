@@ -4,6 +4,9 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import Image from 'next/image'
 import { ECOSYSTEM_LOGOS } from '@/data/content'
 
+/** Logos with extra whitespace in the asset — scale up inside the same cell frame */
+const LOGO_FRAME_BOOST = new Set(['Polycab', 'Siemens', 'Precision', 'AKG'])
+
 export default function EcosystemSection() {
   const sectionRef = useRef<HTMLElement>(null)
   const [isPaused, setIsPaused] = useState(false)
@@ -43,11 +46,11 @@ export default function EcosystemSection() {
         // Carousel container reveal
         const carousel = section.querySelector('.eco-carousel-viewport')
         if (carousel) {
-          gsap.fromTo(carousel,
-            { y: 20, opacity: 0 },
+          gsap.fromTo(
+            carousel,
+            { y: 20 },
             {
               y: 0,
-              opacity: 1,
               duration: 0.75,
               ease: 'power2.out',
               scrollTrigger: { trigger: carousel, start: 'top 88%', once: true },
@@ -107,7 +110,7 @@ export default function EcosystemSection() {
       <div className="site-container" style={{ marginBottom: '36px' }}>
         <div data-reveal className="section-label" style={{ marginBottom: '20px' }}>
           <span className="section-label-bullet" />
-          <span className="t-label">03 — Our Clients &amp; Industry Relationships</span>
+          <span className="t-label">03 — Our trusted vendors and collaborators</span>
         </div>
 
         <div
@@ -163,7 +166,7 @@ export default function EcosystemSection() {
                   e.currentTarget.style.background = 'transparent'
                 }}
               >
-                Our Clients &amp; Relationships ↗
+                Our trusted vendors and collaborators ↗
               </a>
 
               {/* ── Carousel Navigation Arrows ── */}
@@ -209,14 +212,18 @@ export default function EcosystemSection() {
               className="eco-logo-cell"
               title={brand.name}
             >
-              <Image
-                src={brand.logo}
-                alt={brand.alt}
-                width={160}
-                height={70}
-                className="eco-logo-img"
-                loading="lazy"
-              />
+              <div
+                className={`eco-logo-frame${LOGO_FRAME_BOOST.has(brand.name) ? ' eco-logo-frame--boost' : ''}`}
+              >
+                <Image
+                  src={brand.logo}
+                  alt={brand.alt}
+                  fill
+                  sizes="(max-width: 640px) 120px, 160px"
+                  className="eco-logo-img"
+                  loading="lazy"
+                />
+              </div>
             </div>
           ))}
         </div>
@@ -340,25 +347,36 @@ export default function EcosystemSection() {
           border-radius: 0;
           box-shadow: none;
           display: flex;
-          align-items: center;
+          align-items: stretch;
           justify-content: center;
           padding: 14px 22px;
           position: relative;
           transition: background 260ms ease, transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* ─── Logo image — large, clear, maintains aspect ratio ─── */
+        /* ─── Logo frame fills the padded cell; image uses contain ─── */
+        .eco-logo-frame {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          min-width: 0;
+          min-height: 0;
+          flex: 1 1 auto;
+          max-width: 100%;
+          max-height: 100%;
+        }
+
+        .eco-logo-frame--boost {
+          transform: scale(1.22);
+          transform-origin: center center;
+        }
+
         .eco-logo-img {
-          width: auto !important;
-          height: auto !important;
-          max-width: 90% !important;
-          max-height: 78% !important;
           object-fit: contain !important;
           object-position: center !important;
           opacity: 1;
           filter: none;
           transition: opacity 260ms ease;
-          display: block;
         }
 
         /* ─── Hover: very subtle scale, light gold tint ─── */
@@ -391,9 +409,8 @@ export default function EcosystemSection() {
             height: 80px;
             padding: 10px 14px;
           }
-          .eco-logo-img {
-            max-width: 82% !important;
-            max-height: 68% !important;
+          .eco-logo-frame--boost {
+            transform: scale(1.18);
           }
           .eco-carousel-viewport {
             min-height: 80px;

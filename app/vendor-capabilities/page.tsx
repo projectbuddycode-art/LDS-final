@@ -6,11 +6,13 @@ import BackNav from '@/components/navigation/BackNav'
 import { COMPANY, EQUIPMENT_CATEGORIES, EQUIPMENT_RANGE } from '@/data/content'
 import { MEDIA } from '@/data/media'
 import LazyVideo from '@/components/LazyVideo'
-import { PROJECT_TYPES } from '@/components/quote/QuoteModal'
+import { PROJECT_TYPES, isValidPhone, validateInquiry } from '@/lib/inquiry'
 
 export default function ProductsEquipmentPage() {
   const [formSubmitted, setFormSubmitted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [inquiryResult, setInquiryResult] = useState<{ referenceId?: string; emailStatus?: string } | null>(null)
+  const [honeypot, setHoneypot] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [formData, setFormData] = useState({
     name: '',
@@ -27,8 +29,17 @@ export default function ProductsEquipmentPage() {
     e.preventDefault()
     setErrorMessage('')
 
-    if (!formData.name.trim() || !formData.phone.trim() || !formData.email.trim() || !formData.requirement.trim()) {
-      setErrorMessage('Please fill in all required fields.')
+    if (!isValidPhone(formData.phone.trim())) {
+      setErrorMessage('Please enter a valid phone number.')
+      return
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      setErrorMessage('Please enter a valid email address.')
+      return
+    }
+    const checked = validateInquiry({ ...formData, faxNumber: honeypot, source: 'Equipment inquiry form' })
+    if (!checked.ok) {
+      setErrorMessage(checked.error)
       return
     }
 
@@ -39,14 +50,17 @@ export default function ProductsEquipmentPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
-          source: 'Website Quote Form',
+          source: 'Equipment inquiry form',
+          idempotencyKey: crypto.randomUUID(),
+          faxNumber: honeypot,
         }),
       })
       const data = await res.json()
       if (res.ok && data.success) {
+        setInquiryResult({ referenceId: data.referenceId, emailStatus: data.emailStatus })
         setFormSubmitted(true)
       } else {
-        setErrorMessage(data.error || 'Failed to submit quote request.')
+        setErrorMessage(data.error || 'Failed to submit the inquiry.')
       }
     } catch (err) {
       setErrorMessage('Network error. Please try again or reach LDS directly.')
@@ -209,7 +223,7 @@ export default function ProductsEquipmentPage() {
               </div>
             </div>
 
-            {/* Right Column: Simple Indian-Business Friendly "Get a Quote" Form */}
+            {/* Right Column: Send Inquiry form */}
             <div className="vendor-quote-card" style={{ background: 'var(--bg-light)', border: '1px solid var(--line-gold)', padding: 'clamp(24px, 3.5vw, 40px)', position: 'sticky', top: '100px' }}>
               {!formSubmitted ? (
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -219,7 +233,7 @@ export default function ProductsEquipmentPage() {
                       <span className="t-label">Direct Enquiry</span>
                     </div>
                     <h3 className="t-headline" style={{ fontSize: '22px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '4px' }}>
-                      GET A QUOTE
+                      SEND INQUIRY
                     </h3>
                     <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: 0 }}>
                       Tell us about your electrical project and our team will get in touch.
@@ -361,7 +375,7 @@ export default function ProductsEquipmentPage() {
                       minHeight: '44px',
                     }}
                   >
-                    {isSubmitting ? 'SENDING REQUEST...' : 'SEND REQUEST ↗'}
+                    {isSubmitting ? 'SENDING INQUIRY...' : 'SEND INQUIRY ↗'}
                   </button>
                 </form>
               ) : (
@@ -374,11 +388,16 @@ export default function ProductsEquipmentPage() {
                     <span className="t-label">Submission Confirmed</span>
                   </div>
                   <h3 className="t-headline" style={{ fontSize: '22px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '12px' }}>
-                    REQUEST RECEIVED
+                    {inquiryResult?.emailStatus === 'sent' ? 'Thank you for contacting Lukhdatar & Sons.' : 'Your inquiry has been saved.'}
                   </h3>
-                  <p className="t-body" style={{ fontSize: '13.5px', color: 'var(--text-secondary)', lineHeight: 1.65, marginBottom: '24px' }}>
-                    Thank you. Your project enquiry has been received by LDS. Our team will review your requirement and get in touch.
+                  <p className="t-body" style={{ fontSize: '13.5px', color: 'var(--text-secondary)', lineHeight: 1.65, marginBottom: '12px' }}>
+                    {inquiryResult?.emailStatus === 'sent'
+                      ? 'Your inquiry has been received. Our team will review your requirements and contact you using the details provided.'
+                      : 'Your inquiry was saved, but email delivery to the LDS team is not confirmed. Please try again or contact LDS directly using the published email addresses.'}
                   </p>
+                  {inquiryResult?.referenceId && (
+                    <p className="t-label" style={{ marginBottom: '24px' }}>Inquiry reference {inquiryResult.referenceId}</p>
+                  )}
                   <button
                     onClick={() => {
                       setFormSubmitted(false)

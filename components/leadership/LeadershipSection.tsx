@@ -22,21 +22,17 @@ const FOUNDER_STORY = [
   },
 ]
 
+const SHREE_MILESTONE = {
+  year: '2013',
+  label: 'Shree Joined Lukhdatar & Sons',
+  body: 'As the current owner of the company, he oversees project delivery.',
+}
+
 const MD_STORY = [
   {
-    label: 'Executive Leadership & Execution',
-    body: 'Mr. Shree Mangalam Sureka joined Lukhdatar & Sons in 2007 to spearhead its turnkey contracting division, introducing structured project management practices to complement the company\'s technical foundation. As Managing Director, he oversees project delivery teams, client relationships, engineering quality, and safety standards.',
-  },
-  {
     label: 'Delivery Standards & Lifecycle Support',
-    body: 'Under his leadership, Lukhdatar & Sons has maintained consistent engineering standards and timeline adherence across diverse contract sizes. The company prioritizes pre-commissioning testing rigour, clear technical documentation, and post-commissioning routine maintenance to support long-term client relationships and repeat engagements.',
+    body: 'Lukhdatar & Sons has maintained consistent engineering standards and timeline adherence across diverse contract sizes. The company prioritizes pre-commissioning testing rigour, clear technical documentation, and post-commissioning routine maintenance to support long-term client relationships and repeat engagements.',
   },
-]
-
-const CAPABILITY_HIGHLIGHTS = [
-  { value: '66KV', label: 'Underground Cable Works' },
-  { value: '220KV', label: 'Substations & Switchyards' },
-  { value: '400KV', label: 'Transmission Capability' },
 ]
 
 export default function LeadershipSection() {
@@ -177,7 +173,7 @@ export default function LeadershipSection() {
               >
                 <Image
                   src={MEDIA.leadership.md}
-                  alt="Mr. Shree Mangalam Sureka, Managing Director of Lukhdatar & Sons"
+                  alt="Mr. Shree Mangalam Sureka, current owner of Lukhdatar & Sons"
                   fill
                   sizes="(max-width: 768px) 90vw, 28vw"
                   style={{ objectFit: 'cover', objectPosition: 'top center' }}
@@ -197,7 +193,7 @@ export default function LeadershipSection() {
                 <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.01em', lineHeight: 1.3 }}>
                   Mr. Shree Mangalam Sureka
                 </div>
-                <div className="t-label" style={{ color: 'var(--accent-gold)', marginTop: '5px' }}>Managing Director</div>
+                <div className="t-label" style={{ color: 'var(--accent-gold)', marginTop: '5px' }}>Current Owner</div>
               </div>
             </div>
           </div>
@@ -293,6 +289,49 @@ export default function LeadershipSection() {
                 Current Leadership — Mr. Shree Mangalam Sureka
               </div>
 
+              <div
+                data-reveal
+                className="founder-story-row"
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '64px 1fr',
+                  gap: '16px',
+                  padding: '18px 0',
+                  borderBottom: '1px solid var(--line-soft)',
+                }}
+              >
+                <div>
+                  <div style={{
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    letterSpacing: '0.05em',
+                    color: 'var(--accent-gold)',
+                    lineHeight: 1,
+                    marginBottom: '6px',
+                  }}>
+                    {SHREE_MILESTONE.year}
+                  </div>
+                  <div style={{
+                    width: '16px',
+                    height: '1px',
+                    background: 'var(--line-gold)',
+                  }} />
+                </div>
+                <div>
+                  <div style={{
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    letterSpacing: '0.12em',
+                    textTransform: 'uppercase',
+                    color: 'var(--text-primary)',
+                    marginBottom: '8px',
+                  }}>
+                    {SHREE_MILESTONE.label}
+                  </div>
+                  <p className="t-body" style={{ fontSize: '14px', lineHeight: 1.68 }}>{SHREE_MILESTONE.body}</p>
+                </div>
+              </div>
+
               {MD_STORY.map((item) => (
                 <div
                   key={item.label}
@@ -316,36 +355,6 @@ export default function LeadershipSection() {
                 </div>
               ))}
             </div>
-
-            {/* Capability highlights */}
-            <div data-reveal className="leadership-stats-grid">
-              {CAPABILITY_HIGHLIGHTS.map((stat, i) => (
-                <div key={stat.value} className="leadership-stat-cell" style={{
-                  padding: '18px 16px',
-                }}>
-                  <div style={{
-                    fontSize: 'clamp(20px, 2.2vw, 28px)',
-                    fontWeight: 700,
-                    letterSpacing: '-0.015em',
-                    color: 'var(--text-primary)',
-                    lineHeight: 1,
-                    marginBottom: '6px',
-                  }}>
-                    {stat.value}
-                  </div>
-                  <div style={{
-                    fontSize: '9px',
-                    fontWeight: 500,
-                    letterSpacing: '0.14em',
-                    textTransform: 'uppercase',
-                    color: 'var(--text-muted)',
-                    lineHeight: 1.4,
-                  }}>
-                    {stat.label}
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </div>
@@ -357,17 +366,6 @@ export default function LeadershipSection() {
         }
         .leadership-portrait-card:hover {
           transform: translateY(-3px);
-        }
-        .leadership-stats-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          border: 1px solid var(--line);
-        }
-        .leadership-stat-cell {
-          border-right: 1px solid var(--line);
-        }
-        .leadership-stat-cell:last-child {
-          border-right: none;
         }
         @media (max-width: 900px) {
           .leadership-main-grid {
@@ -384,16 +382,6 @@ export default function LeadershipSection() {
           .leadership-portraits-col {
             grid-template-columns: 1fr !important;
             gap: 24px !important;
-          }
-          .leadership-stats-grid {
-            grid-template-columns: 1fr !important;
-          }
-          .leadership-stat-cell {
-            border-right: none !important;
-            border-bottom: 1px solid var(--line);
-          }
-          .leadership-stat-cell:last-child {
-            border-bottom: none;
           }
         }
       `}</style>

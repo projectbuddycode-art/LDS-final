@@ -51,7 +51,7 @@ export default function FinalCTA() {
 
         <div data-reveal className="section-label" style={{ marginBottom: '24px' }}>
           <span className="section-label-bullet" />
-          <span className="t-label">Lukhdatar & Sons / Get a Quote</span>
+          <span className="t-label">Lukhdatar & Sons / Send Inquiry</span>
         </div>
 
         <h2 data-reveal style={{
@@ -77,7 +77,7 @@ export default function FinalCTA() {
             className="cta-btn cta-btn-primary"
             style={{ justifyContent: 'space-between', cursor: 'pointer', fontFamily: 'inherit', minHeight: '48px' }}
           >
-            Get a Quote <span className="cta-arrow">↗</span>
+            Send Inquiry <span className="cta-arrow">↗</span>
           </button>
           <button
             onClick={() => openQuoteModal('Electrical Equipment Supply')}

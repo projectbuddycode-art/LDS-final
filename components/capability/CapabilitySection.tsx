@@ -14,19 +14,19 @@ const CAPABILITY_STATS = [
     detail: 'Full electrical contracting capability',
   },
   {
-    value: '66KV',
-    label: 'Underground Cable Works',
-    detail: 'HT underground cable systems',
+    value: '11KV',
+    label: 'Distribution Networks',
+    detail: 'HT distribution systems',
   },
   {
-    value: '220KV',
-    label: 'Substations & Switchyards',
-    detail: 'Complete substation construction',
+    value: '33KV',
+    label: 'Distribution Substations',
+    detail: '33/11KV substation distribution',
   },
   {
-    value: '400KV',
-    label: 'Transmission Capability',
-    detail: 'Overhead line stringing & towers',
+    value: '132KV',
+    label: 'Substation and Switchyard',
+    detail: 'Substation and switchyard works',
   },
 ]
 
@@ -107,7 +107,7 @@ export default function CapabilitySection() {
               <span style={{ color: 'var(--accent-gold)' }}>every voltage.</span>
             </h2>
             <p data-reveal className="t-body" style={{ maxWidth: '400px' }}>
-              Lukhdatar & Sons delivers complete electrical infrastructure across Government and Private sectors, managing low, medium, and high-voltage projects up to 400KV transmission and 220KV substations.
+              Lukhdatar & Sons delivers complete electrical infrastructure across Government and Private sectors, managing low, medium, and high-voltage distribution, underground cable systems, and substation works.
             </p>
           </div>
         </div>

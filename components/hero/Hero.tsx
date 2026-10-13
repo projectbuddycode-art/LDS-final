@@ -220,9 +220,9 @@ export default function Hero() {
       <style>{`
         /* ── Hero text column ── */
         .hero-text-col {
-          width: 44%;
-          max-width: 580px;
-          min-width: 280px;
+          width: min(44%, 580px);
+          max-width: 100%;
+          min-width: 0;
         }
 
         /* ── Hero headline ── */
@@ -230,6 +230,8 @@ export default function Hero() {
           display: flex;
           flex-direction: column;
           gap: 0;
+          width: min(100%, 620px);
+          max-width: 100%;
           margin-bottom: 24px;
           font-size: clamp(38px, 4.8vw, 68px);
           font-weight: 600;
@@ -240,6 +242,8 @@ export default function Hero() {
 
         .hero-headline-line {
           display: block;
+          width: 100%;
+          max-width: 100%;
           overflow: hidden;
         }
 
@@ -352,15 +356,14 @@ export default function Hero() {
         /* ── Tablet: widen text column slightly ── */
         @media (max-width: 1024px) {
           .hero-text-col {
-            width: 58%;
-            max-width: 540px;
+            width: min(58%, 540px);
+            max-width: 100%;
           }
           .hero-headline {
             font-size: clamp(34px, 5vw, 56px);
           }
         }
 
-        /* ── Mobile: full width, stack cleanly without collision ── */
         @media (max-width: 768px) {
           .hero-root {
             min-height: 100svh;
@@ -376,8 +379,13 @@ export default function Hero() {
             max-width: 100%;
           }
           .hero-headline {
+            width: 100%;
+            max-width: 100%;
             font-size: clamp(30px, 7.5vw, 44px);
             margin-bottom: 18px;
+          }
+          .hero-headline-line {
+            white-space: normal;
           }
           .hero-para {
             max-width: 100%;

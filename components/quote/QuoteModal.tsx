@@ -2,18 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react'
 
-export const PROJECT_TYPES = [
-  'Industrial Electrification',
-  'Warehouse Electrification',
-  'Substation / Switchyard',
-  'Transmission Lines',
-  'Underground Cable Work',
-  'Commercial Electrical Work',
-  'Township Electrification',
-  'Electrical Equipment Supply',
-  'Maintenance / Support',
-  'Other',
-] as const
+import { PROJECT_TYPES, isValidPhone, validateInquiry } from '@/lib/inquiry'
+
+export { PROJECT_TYPES }
 
 export default function QuoteModal() {
   const [isOpen, setIsOpen] = useState(false)
@@ -32,15 +23,23 @@ export default function QuoteModal() {
     message: '',
   })
 
+  const [inquiryResult, setInquiryResult] = useState<{ referenceId?: string; emailStatus?: string } | null>(null)
+  const idempotencyKey = useRef('')
+  const [honeypot, setHoneypot] = useState('')
   const modalRef = useRef<HTMLDivElement>(null)
 
   // Listen for open-lds-quote custom event
   useEffect(() => {
     function handleOpen(e: Event) {
       const customEvent = e as CustomEvent<{ projectType?: string }>
-      if (customEvent.detail?.projectType) {
-        setFormData((prev) => ({ ...prev, projectType: customEvent.detail.projectType || prev.projectType }))
+      const requestedType = customEvent.detail?.projectType
+      const allowedType = PROJECT_TYPES.find((type) => type === requestedType)
+      if (allowedType) {
+        setFormData((prev) => ({ ...prev, projectType: allowedType }))
       }
+      idempotencyKey.current = crypto.randomUUID()
+      setHoneypot('')
+      setInquiryResult(null)
       setIsSubmitted(false)
       setErrorMessage('')
       setIsOpen(true)
@@ -51,6 +50,8 @@ export default function QuoteModal() {
       if (window.location.hash === '#quote' || window.location.hash === '#contact') {
         setIsSubmitted(false)
         setErrorMessage('')
+        setInquiryResult(null)
+        idempotencyKey.current = crypto.randomUUID()
         setIsOpen(true)
       }
     }
@@ -101,16 +102,26 @@ export default function QuoteModal() {
       setErrorMessage('Please enter your full name.')
       return
     }
-    if (!formData.phone.trim()) {
-      setErrorMessage('Please enter your phone number.')
+    if (!isValidPhone(formData.phone.trim())) {
+      setErrorMessage('Please enter a valid phone number.')
       return
     }
-    if (!formData.email.trim()) {
-      setErrorMessage('Please enter your email address.')
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      setErrorMessage('Please enter a valid email address.')
+      return
+    }
+    if (!formData.projectType) {
+      setErrorMessage('Please select a project type.')
       return
     }
     if (!formData.requirement.trim()) {
       setErrorMessage('Please describe your project requirement.')
+      return
+    }
+
+    const checked = validateInquiry({ ...formData, faxNumber: honeypot })
+    if (!checked.ok) {
+      setErrorMessage(checked.error)
       return
     }
 
@@ -121,12 +132,15 @@ export default function QuoteModal() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
-          source: 'Website Quote Form',
+          source: 'Website inquiry form',
+          idempotencyKey: idempotencyKey.current || crypto.randomUUID(),
+          faxNumber: honeypot,
         }),
       })
 
       const result = await res.json()
       if (res.ok && result.success) {
+        setInquiryResult({ referenceId: result.referenceId, emailStatus: result.emailStatus })
         setIsSubmitted(true)
         setFormData({
           name: '',
@@ -139,7 +153,7 @@ export default function QuoteModal() {
           message: '',
         })
       } else {
-        setErrorMessage(result.error || 'Failed to submit quote request. Please try again.')
+        setErrorMessage(result.error || 'Failed to submit the inquiry. Please try again.')
       }
     } catch (err) {
       setErrorMessage('Network error. Please try again or reach LDS directly.')
@@ -223,7 +237,7 @@ export default function QuoteModal() {
                 className="t-headline"
                 style={{ fontSize: 'clamp(24px, 3.2vw, 36px)', lineHeight: 1.15, marginBottom: '8px' }}
               >
-                GET A QUOTE
+                SEND INQUIRY
               </h2>
               <p className="t-body" style={{ fontSize: '14px', lineHeight: 1.6, margin: 0 }}>
                 Tell us about your electrical project and our team will get in touch.
@@ -248,6 +262,16 @@ export default function QuoteModal() {
 
             {/* Form */}
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <input
+                type="text"
+                name="faxNumber"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                style={{ position: 'absolute', left: '-9999px', height: 0, width: 0, opacity: 0 }}
+              />
               {/* Row 1: Name & Company */}
               <div className="quote-form-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: '16px' }}>
                 <div>
@@ -471,7 +495,7 @@ export default function QuoteModal() {
                     cursor: isSubmitting ? 'not-allowed' : 'pointer',
                   }}
                 >
-                  {isSubmitting ? 'SUBMITTING REQUEST...' : 'SEND REQUEST ↗'}
+                  {isSubmitting ? 'SENDING INQUIRY...' : 'SEND INQUIRY ↗'}
                 </button>
               </div>
 
@@ -508,12 +532,19 @@ export default function QuoteModal() {
             </div>
 
             <h2 className="t-headline" style={{ fontSize: '28px', marginBottom: '16px', color: 'var(--text-primary)' }}>
-              REQUEST RECEIVED
+              {inquiryResult?.emailStatus === 'sent' ? 'Thank you for contacting Lukhdatar & Sons.' : 'Your inquiry has been saved.'}
             </h2>
 
-            <p className="t-body" style={{ maxWidth: '480px', margin: '0 auto 32px', lineHeight: 1.7 }}>
-              Thank you. Your project enquiry has been received by LDS. Our team will review your requirement and get in touch.
+            <p className="t-body" style={{ maxWidth: '480px', margin: '0 auto 16px', lineHeight: 1.7 }}>
+              {inquiryResult?.emailStatus === 'sent'
+                ? 'Your inquiry has been received. Our team will review your requirements and contact you using the details provided.'
+                : 'Your inquiry was saved, but email delivery to the LDS team is not confirmed. Please try again or contact LDS directly using the published email addresses.'}
             </p>
+            {inquiryResult?.referenceId && (
+              <p className="t-label" style={{ marginBottom: '32px' }}>
+                Inquiry reference {inquiryResult.referenceId}
+              </p>
+            )}
 
             <button
               onClick={handleClose}

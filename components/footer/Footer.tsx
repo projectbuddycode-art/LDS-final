@@ -90,7 +90,7 @@ export default function Footer() {
               </div>
             </div>
 
-            {/* Get a Quote CTA */}
+            {/* Send Inquiry CTA */}
             <div style={{ marginTop: '32px' }}>
               <button
                 onClick={() => openQuoteModal()}
@@ -121,7 +121,7 @@ export default function Footer() {
                   e.currentTarget.style.color = '#FAF8F5'
                 }}
               >
-                Get a Quote
+                Send Inquiry
                 <span style={{ display: 'inline-block', transition: 'transform 250ms ease' }}>↗</span>
               </button>
             </div>

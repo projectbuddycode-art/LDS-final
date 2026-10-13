@@ -31,10 +31,10 @@ export const LEADERSHIP = [
   {
     id: 'md',
     name: 'Mr. Shree Mangalam Sureka',
-    title: 'Managing Director',
+    title: 'Current Owner',
     imageKey: 'md' as const,
-    since: '2007',
-    bio: 'Mr. Shree Mangalam Sureka joined Lukhdatar & Sons in 2007 to lead its expansion into turnkey electrical contracting. As Managing Director, he oversees project execution teams, client relationships, engineering quality, and safety compliance across Government and Private sector developments.',
+    since: '2013',
+    bio: 'Mr. Shree Mangalam Sureka joined Lukhdatar & Sons in 2013. As the current owner of the company, he oversees project delivery.',
   },
 ]
 
@@ -49,7 +49,13 @@ export const TIMELINE = [
     year: '2007',
     label: 'Expanded into Turnkey Electrical Contracting',
     description:
-      'Transitioned into full-scale turnkey electrical contracting under Managing Director Mr. Shree Mangalam Sureka, undertaking complete SITC projects for Government and Private sector clients.',
+      'The company expanded into full-scale turnkey electrical contracting, undertaking complete SITC projects for Government and Private sector clients.',
+  },
+  {
+    year: '2013',
+    label: 'Shree Joined Lukhdatar & Sons',
+    description:
+      'As the current owner of the company, he oversees project delivery.',
   },
   {
     year: 'Present',
@@ -62,9 +68,9 @@ export const TIMELINE = [
 export const CAPABILITY_STATS = [
   { value: '1997', label: 'Established in Kolkata' },
   { value: '2007', label: 'Turnkey Contracting Since' },
-  { value: '66KV', label: 'Underground Cable Systems Up To' },
-  { value: '220KV', label: 'Substations & Switchyards Up To' },
-  { value: '400KV', label: 'Overhead Transmission Lines Up To' },
+  { value: '11KV', label: 'Distribution Networks' },
+  { value: '33KV', label: 'Distribution Substations' },
+  { value: '132KV', label: 'Substation and Switchyard' },
 ]
 
 export const TURNKEY_STAGES = [
@@ -130,7 +136,7 @@ export const EQUIPMENT_CATEGORIES = [
   'Feeder Pillar Boards',
   'Junction Boxes',
   'Tap-Off Boxes',
-  'Transformer / DG Panels',
+  'DG Synchronising Panels',
   'Switchboards',
   'Draw-Out & Non-Draw-Out Equipment',
 ]
@@ -202,7 +208,7 @@ export const PROJECTS = [
   },
   {
     id: 'signature',
-    title: 'Signature',
+    title: 'Prabhatam Heights',
     scope: 'HT/LT Power Distribution',
     mediaKey: 'signature' as const,
     tag: 'Residential / Township',
@@ -277,11 +283,11 @@ export const ECOSYSTEM_LOGOS: EcosystemBrandItem[] = [
   { name: 'Philips', logo: '/media/ecosystem/philips.jpg', alt: 'Philips Lighting and electrical systems' },
   { name: 'Wipro', logo: '/media/ecosystem/wipro.jpg', alt: 'Wipro lighting and power solutions' },
   { name: '3M', logo: '/media/ecosystem/3m.png', alt: '3M electrical insulation and termination' },
-  { name: 'Utkarsh India', logo: '/media/ecosystem/utkarsh-india.png', alt: 'Utkarsh India transmission and high-mast poles' },
   { name: 'Volamp', logo: '/media/ecosystem/volamp.jpg', alt: 'Volamp transformers and power solutions' },
+  { name: 'Polycab', logo: '/media/ecosystem/polycab.png', alt: 'Polycab wires and cables' },
+  { name: 'Siemens', logo: '/media/ecosystem/simens.png', alt: 'Siemens electrical technology' },
+  { name: 'Precision', logo: '/media/ecosystem/precision.png', alt: 'Precision pipes and fittings' },
   { name: 'AKG', logo: '/media/ecosystem/akg.jpg', alt: 'AKG pipes and electrical conduits' },
-  { name: 'Daga Power Group', logo: '/media/ecosystem/daga-power-group.jpg', alt: 'Daga Power Group electrical equipment' },
-  { name: 'Mescab', logo: '/media/ecosystem/mescab.jpg', alt: 'Mescab Smart Living cables and wires' },
 ]
 
 export const ECOSYSTEM_BRANDS = ECOSYSTEM_LOGOS.map(b => b.name)
@@ -312,7 +318,7 @@ export const VERIFIED_RELATIONSHIPS = [
 export const NAV_LINKS = [
   { label: 'About Us', href: '/company' },
   { label: 'Our Services', href: '/capabilities' },
-  { label: 'Our Clients', href: '/partner-with-us' },
+  { label: 'Our trusted vendors and collaborators', href: '/partner-with-us' },
   { label: 'Products & Equipment', href: '/vendor-capabilities' },
   { label: 'Projects & Industries', href: '/insights' },
 ]
@@ -334,7 +340,7 @@ export const FOOTER_SECTIONS = [
     heading: 'Products & Clients',
     links: [
       { label: 'Products & Equipment', href: '/vendor-capabilities' },
-      { label: 'Our Clients & Relationships', href: '/partner-with-us' },
+      { label: 'Our trusted vendors and collaborators', href: '/partner-with-us' },
       { label: 'Quality & Safety Approach', href: '/quality-safety' },
       { label: 'Projects & Industries', href: '/insights' },
     ],
@@ -389,7 +395,7 @@ export const CAPABILITIES_DATA: Record<string, CapabilityDetail> = {
       'Site Execution: Cable tray routing, panel erection, and termination work.',
       'Handover & Support: Statutory testing reports, as-built documentation, and routine maintenance.'
     ],
-    ctaText: 'Get a Quote',
+    ctaText: 'Send Inquiry',
     ctaHref: '/vendor-capabilities?type=Turnkey'
   },
   'substations-switchyards': {
@@ -419,7 +425,7 @@ export const CAPABILITIES_DATA: Record<string, CapabilityDetail> = {
       'Commissioning: Grid synchronisation and load trial runs.',
       'Post-Commissioning: Transformer oil filtration, contact resistance testing, and preventative maintenance.'
     ],
-    ctaText: 'Get a Quote',
+    ctaText: 'Send Inquiry',
     ctaHref: '/vendor-capabilities?type=Substation'
   },
   'transmission-lines': {
@@ -449,7 +455,7 @@ export const CAPABILITIES_DATA: Record<string, CapabilityDetail> = {
       'Commissioning: Phasing checks, clearance verification, and statutory energisation.',
       'Maintenance: Route inspection patrols, insulator washing, and structural maintenance.'
     ],
-    ctaText: 'Get a Quote',
+    ctaText: 'Send Inquiry',
     ctaHref: '/partner-with-us?type=Transmission'
   },
   'underground-cable-laying': {
@@ -479,7 +485,7 @@ export const CAPABILITIES_DATA: Record<string, CapabilityDetail> = {
       'Operation: Cable marker upkeep and thermal imaging of termination boxes.',
       'Support: Rapid fault location, core splicing, and joint box replacements.'
     ],
-    ctaText: 'Get a Quote',
+    ctaText: 'Send Inquiry',
     ctaHref: '/vendor-capabilities?type=Cabling'
   },
   'industrial-electrification': {
@@ -509,7 +515,7 @@ export const CAPABILITIES_DATA: Record<string, CapabilityDetail> = {
       'Preventative Maintenance: Thermography surveys, breaker contact inspection, and busbar torque checks.',
       'Upgrades: Panel retrofitting, capacity expansion, and switchgear modernization.'
     ],
-    ctaText: 'Get a Quote',
+    ctaText: 'Send Inquiry',
     ctaHref: '/vendor-capabilities?type=Industrial'
   },
   'warehouse-electrification': {
@@ -539,7 +545,7 @@ export const CAPABILITIES_DATA: Record<string, CapabilityDetail> = {
       'Maintenance: High-mast winch motor inspections, panel cleaning, and lighting maintenance.',
       'Expansion: Electrical infrastructure scaling for warehouse expansion phases.'
     ],
-    ctaText: 'Get a Quote',
+    ctaText: 'Send Inquiry',
     ctaHref: '/vendor-capabilities?type=Warehouse'
   },
   'testing-commissioning': {
@@ -569,7 +575,7 @@ export const CAPABILITIES_DATA: Record<string, CapabilityDetail> = {
       'Commissioning: Phasing alignment, load trials, and utility handover.',
       'Periodic Testing: Annual relay recalibration and insulation resistance re-certification.'
     ],
-    ctaText: 'Get a Quote',
+    ctaText: 'Send Inquiry',
     ctaHref: '/vendor-capabilities?type=Testing'
   },
   'electrical-maintenance': {
@@ -599,7 +605,7 @@ export const CAPABILITIES_DATA: Record<string, CapabilityDetail> = {
       'Diagnostic Checks: Infrared thermography to identify loose connections before faults occur.',
       'Lifecycle Support: Modernizing obsolete components to prolong installation life.'
     ],
-    ctaText: 'Get a Quote',
+    ctaText: 'Send Inquiry',
     ctaHref: '/vendor-capabilities?type=Maintenance'
   }
 }

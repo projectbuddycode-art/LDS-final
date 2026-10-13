@@ -71,7 +71,7 @@ const orgSchema = {
         {
           '@type': 'Person',
           'name': 'Mr. Shree Mangalam Sureka',
-          'jobTitle': 'Managing Director',
+          'jobTitle': 'Current Owner',
         },
       ],
       'address': {

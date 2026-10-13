@@ -4,7 +4,11 @@ import { useEffect, useRef } from 'react'
 import { MEDIA } from '@/data/media'
 import LazyVideo from '@/components/LazyVideo'
 
-const VOLTAGES = ['11KV', '33KV', '66KV', '132KV', '220KV', '400KV']
+const VOLTAGES = [
+  { value: '11KV', label: 'Distribution' },
+  { value: '33KV', label: 'Distribution' },
+  { value: '132KV', label: 'Substation Capability' },
+]
 
 export default function TransmissionSection() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -53,36 +57,36 @@ export default function TransmissionSection() {
       ref={sectionRef}
       className="section-py"
       style={{ background: 'var(--bg-primary)', borderTop: '1px solid var(--line-soft)' }}
-      aria-label="Transmission lines"
+      aria-label="Substations and switchyards"
     >
       <div className="site-container">
 
         <div style={{ marginBottom: 'clamp(32px, 4vw, 52px)', textAlign: 'center' }}>
           <div data-reveal className="section-label" style={{ justifyContent: 'center' }}>
             <span className="section-label-bullet" />
-            <span className="t-label">08 — Transmission Lines</span>
+            <span className="t-label">08 — Substations</span>
           </div>
           <h2 data-reveal className="t-headline" style={{ marginBottom: '16px', textWrap: 'balance' }}>
-            Overhead lines.{' '}
-            <span style={{ color: 'var(--accent-gold)' }}>Up to 400KV.</span>
+            Substations &amp; Switchyards.{' '}
+            <span style={{ color: 'var(--accent-gold)' }}>Up to 132KV.</span>
           </h2>
           <p data-reveal className="t-body" style={{ maxWidth: '520px', margin: '0 auto 32px' }}>
-            Lukhdatar &amp; Sons executes overhead transmission line projects across voltage levels from 11KV to 400KV, covering structural foundations, tower erection, conductor tension stringing, and substation grid synchronization.
+            Lukhdatar &amp; Sons delivers substation and switchyard services, including engineering, equipment installation, testing, and commissioning for utility, industrial, and infrastructure developments.
           </p>
         </div>
 
         {/* Primary video */}
         <div data-visual className="media-frame" style={{ aspectRatio: '16/9', clipPath: 'inset(0% 0 0 0)', marginBottom: 'clamp(32px, 4vw, 52px)' }}>
           <LazyVideo src={MEDIA.transmission} poster="/media/posters/substation.jpg"
-            aria-label="Electrical transmission substation infrastructure" />
+            aria-label="Substation and switchyard infrastructure" />
           <div style={{
             position: 'absolute', bottom: 0, left: 0, right: 0, height: '40%',
             background: 'linear-gradient(to top, rgba(10,14,18,0.60) 0%, transparent 100%)', zIndex: 2,
           }} />
           <div style={{ position: 'absolute', bottom: 'clamp(20px, 3vw, 36px)', right: 'clamp(20px, 3vw, 36px)', zIndex: 3 }}>
-            <div className="t-label" style={{ color: 'rgba(250,248,245,0.50)', marginBottom: '4px' }}>Transmission Capability</div>
+            <div className="t-label" style={{ color: 'rgba(250,248,245,0.50)', marginBottom: '4px' }}>Substation Capability</div>
             <div style={{ fontSize: 'clamp(28px, 3.5vw, 52px)', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--accent-gold)', lineHeight: 1 }}>
-              400KV
+              132KV
             </div>
           </div>
         </div>
@@ -166,19 +170,19 @@ export default function TransmissionSection() {
           borderTop: '1px solid var(--line)', borderLeft: '1px solid var(--line)',
         }}>
           {VOLTAGES.map((v) => (
-            <div key={v} style={{
+            <div key={v.value} style={{
               padding: 'clamp(14px, 2vw, 20px) clamp(12px, 1.5vw, 18px)',
               borderRight: '1px solid var(--line)', borderBottom: '1px solid var(--line)',
               textAlign: 'center',
             }}>
               <div style={{
                 fontSize: 'clamp(16px, 1.8vw, 24px)', fontWeight: 700, letterSpacing: '-0.01em',
-                color: v === '400KV' ? 'var(--accent-gold)' : 'var(--text-primary)', marginBottom: '4px',
+                color: v.value === '132KV' ? 'var(--accent-gold)' : 'var(--text-primary)', marginBottom: '4px',
               }}>
-                {v}
+                {v.value}
               </div>
               <div style={{ fontSize: '10px', fontWeight: 500, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
-                {v === '400KV' ? 'Max Capability' : 'Overhead Lines'}
+                {v.label}
               </div>
             </div>
           ))}

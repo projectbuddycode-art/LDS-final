@@ -51,7 +51,7 @@ export default function CapabilitiesPage() {
                   className="cta-btn cta-btn-primary"
                   style={{ cursor: 'pointer', fontFamily: 'inherit' }}
                 >
-                  Get a Quote for Industrial Scope ↗
+                  Send Inquiry for Industrial Scope ↗
                 </button>
               </div>
             </div>
@@ -270,7 +270,7 @@ export default function CapabilitiesPage() {
               className="cta-btn cta-btn-primary"
               style={{ padding: '14px 32px', cursor: 'pointer', fontFamily: 'inherit' }}
             >
-              Get a Quote for Electrical Services ↗
+              Send Inquiry for Electrical Services ↗
             </button>
           </div>
         </div>

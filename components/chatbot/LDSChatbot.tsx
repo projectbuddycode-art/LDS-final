@@ -33,7 +33,7 @@ We provide complete electrical solutions from design and equipment supply to ins
 • **Company Catalog Download & Direct Quotes**
 
 Would you like us to send your requirement to the LDS team?`,
-    actions: ['GET A QUOTE', 'OUR SERVICES', 'PRODUCTS & EQUIPMENT', 'PROJECTS', 'DOWNLOAD CATALOG', 'CHAT ON WHATSAPP'],
+    actions: ['SEND INQUIRY', 'OUR SERVICES', 'PRODUCTS & EQUIPMENT', 'PROJECTS', 'DOWNLOAD CATALOG', 'CHAT ON WHATSAPP'],
   },
 
   // 2. COMPANY BACKGROUND & HISTORY
@@ -42,14 +42,15 @@ Would you like us to send your requirement to the LDS team?`,
     response: `**Lukhdatar & Sons (LDS)** has been serving the electrical industry since 1997.
 
 • **1997**: Formed in Kolkata by **Mr. Lalit Kumar Sureka** as an electrical goods supplier.
-• **2007**: Expanded into **Turnkey Electrical Contracting** under Managing Director **Mr. Shree Mangalam Sureka**.
+• **2007**: Expanded into **Turnkey Electrical Contracting**.
+• **2013**: **Mr. Shree Mangalam Sureka** joined Lukhdatar & Sons. As the current owner of the company, he oversees project delivery.
 • **Present**: LDS undertakes turnkey electrical projects in both **Government and Private sectors**, delivering commercial, housing, industrial, public, and substation projects.
 
 From supplying electrical equipment to executing complete turnkey electrical projects, LDS has grown through experience, customer relationships, technical capability and project execution.
 
 Would you like us to send your requirement to the LDS team?`,
     scrollTo: '#company',
-    actions: ['GET A QUOTE', 'OUR SERVICES', 'PROJECTS', 'DOWNLOAD CATALOG'],
+    actions: ['SEND INQUIRY', 'OUR SERVICES', 'PROJECTS', 'DOWNLOAD CATALOG'],
   },
 
   {
@@ -57,11 +58,11 @@ Would you like us to send your requirement to the LDS team?`,
     response: `**Leadership at Lukhdatar & Sons:**
 
 • **Mr. Lalit Kumar Sureka (Founder)**: Formed LDS in Kolkata in 1997 as an electrical goods supplier, establishing direct manufacturer distribution channels and high standards of electrical equipment supply.
-• **Mr. Shree Mangalam Sureka (Managing Director)**: Joined in 2007 to lead the company's expansion into turnkey electrical contracting, overseeing project execution teams, client relationships, engineering quality, and on-site delivery.
+• **Mr. Shree Mangalam Sureka (Current Owner)**: Joined Lukhdatar & Sons in 2013. As the current owner of the company, he oversees project delivery.
 
 Would you like us to send your requirement to the LDS team?`,
     scrollTo: '#company',
-    actions: ['GET A QUOTE', 'OUR SERVICES', 'DOWNLOAD CATALOG'],
+    actions: ['SEND INQUIRY', 'OUR SERVICES', 'DOWNLOAD CATALOG'],
   },
 
   // 3. TURNKEY ELECTRICAL SERVICES
@@ -89,7 +90,7 @@ LDS provides complete electrical solutions from design and equipment supply to i
 15. UPS / Power Systems, Public Address, Fire Detection & Cabling
 
 Would you like us to send your requirement to the LDS team?`,
-    actions: ['GET A QUOTE', 'PRODUCTS & EQUIPMENT', 'PROJECTS', 'DOWNLOAD CATALOG'],
+    actions: ['SEND INQUIRY', 'PRODUCTS & EQUIPMENT', 'PROJECTS', 'DOWNLOAD CATALOG'],
   },
 
   // 4. SUBSTATION & SWITCHYARD SERVICES
@@ -112,7 +113,7 @@ LDS commissioned a complete 2 x 3.15 MVA substation with control room and 9 VCB 
 
 Would you like us to send your requirement to the LDS team?`,
     scrollTo: '#turnkey',
-    actions: ['GET A QUOTE', 'PROJECTS', 'PRODUCTS & EQUIPMENT'],
+    actions: ['SEND INQUIRY', 'PROJECTS', 'PRODUCTS & EQUIPMENT'],
   },
 
   // 5. TRANSMISSION LINES
@@ -130,7 +131,7 @@ Services include route surveying, foundation design, tower fabrication & erectio
 
 Would you like us to send your requirement to the LDS team?`,
     scrollTo: '#transmission',
-    actions: ['GET A QUOTE', 'OUR SERVICES', 'DOWNLOAD CATALOG'],
+    actions: ['SEND INQUIRY', 'OUR SERVICES', 'DOWNLOAD CATALOG'],
   },
 
   // 6. UNDERGROUND CABLE SYSTEMS
@@ -148,7 +149,7 @@ LDS provides underground cable laying services up to 66KV:
 
 Would you like us to send your requirement to the LDS team?`,
     scrollTo: '#cable-systems',
-    actions: ['GET A QUOTE', 'OUR SERVICES', 'DOWNLOAD CATALOG'],
+    actions: ['SEND INQUIRY', 'OUR SERVICES', 'DOWNLOAD CATALOG'],
   },
 
   // 7. INDUSTRIAL & WAREHOUSE ELECTRIFICATION
@@ -162,12 +163,12 @@ LDS provides turnkey electrical solutions for industries, process plants and war
 • Industrial power cabling & heavy-duty cable tray networks
 • Power Control Centres (PCC) & Motor Control Centres (MCC)
 • Plant lighting, high-bay warehouse luminaires, and emergency lighting
-• Transformer & DG sync panels installation
+• DG synchronising panels installation
 • Full pre-commissioning testing, energisation and maintenance
 
 Would you like us to send your requirement to the LDS team?`,
     scrollTo: '#capability',
-    actions: ['GET A QUOTE', 'PROJECTS', 'DOWNLOAD CATALOG'],
+    actions: ['SEND INQUIRY', 'PROJECTS', 'DOWNLOAD CATALOG'],
   },
 
   // 8. PRODUCTS & EQUIPMENT
@@ -190,7 +191,7 @@ LDS supplies and installs spec-compliant electrical equipment across major categ
 
 Would you like us to send your requirement to the LDS team?`,
     scrollTo: '#equipment',
-    actions: ['GET A QUOTE', 'OUR SERVICES', 'DOWNLOAD CATALOG'],
+    actions: ['SEND INQUIRY', 'OUR SERVICES', 'DOWNLOAD CATALOG'],
   },
 
   // 9. PROJECTS & CASE STUDIES
@@ -209,7 +210,7 @@ LDS has delivered major turnkey electrical works across Government and Private s
 
 Would you like us to send your requirement to the LDS team?`,
     scrollTo: '#projects',
-    actions: ['GET A QUOTE', 'OUR SERVICES', 'DOWNLOAD CATALOG'],
+    actions: ['SEND INQUIRY', 'OUR SERVICES', 'DOWNLOAD CATALOG'],
   },
 
   // 10. CLIENTS, PARTNERSHIPS & BRAND RELATIONSHIPS
@@ -229,7 +230,7 @@ LDS also integrates equipment from leading brands including Schneider Electric, 
 
 Would you like us to send your requirement to the LDS team?`,
     scrollTo: '#ecosystem',
-    actions: ['GET A QUOTE', 'OUR SERVICES', 'DOWNLOAD CATALOG'],
+    actions: ['SEND INQUIRY', 'OUR SERVICES', 'DOWNLOAD CATALOG'],
   },
 
   // 11. TESTING, COMMISSIONING & MAINTENANCE
@@ -245,7 +246,7 @@ LDS delivers end-to-end electrical testing, energisation and lifecycle maintenan
 
 Would you like us to send your requirement to the LDS team?`,
     scrollTo: '#commissioning',
-    actions: ['GET A QUOTE', 'OUR SERVICES', 'DOWNLOAD CATALOG'],
+    actions: ['SEND INQUIRY', 'OUR SERVICES', 'DOWNLOAD CATALOG'],
   },
 
   // 12. CONTACT INFORMATION & OFFICES
@@ -265,10 +266,10 @@ Would you like us to send your requirement to the LDS team?`,
 
 • **Contact Persons**:
   Mr. Lalit Kumar Sureka (Founder)
-  Mr. Shree Mangalam Sureka (Managing Director)
+  Mr. Shree Mangalam Sureka (Current Owner)
 
 Would you like to submit your project requirements directly to the LDS team now?`,
-    actions: ['GET A QUOTE', 'CHAT ON WHATSAPP', 'DOWNLOAD CATALOG'],
+    actions: ['SEND INQUIRY', 'CHAT ON WHATSAPP', 'DOWNLOAD CATALOG'],
   },
 ]
 
@@ -280,12 +281,12 @@ const FALLBACK_TOPIC: KnowledgeTopic = {
 Lukhdatar & Sons is a turnkey electrical infrastructure contractor established in 1997, specializing in substations up to 220KV, transmission lines up to 400KV, underground cabling up to 66KV, industrial electrification, and equipment supply.
 
 Would you like us to collect your project requirement and send it directly to the LDS team for technical confirmation?`,
-  actions: ['GET A QUOTE', 'CHAT ON WHATSAPP', 'OUR SERVICES', 'DOWNLOAD CATALOG'],
+  actions: ['SEND INQUIRY', 'CHAT ON WHATSAPP', 'OUR SERVICES', 'DOWNLOAD CATALOG'],
 }
 
 // 6 Core Quick Action Definitions
 const CORE_QUICK_ACTIONS = [
-  { label: 'GET A QUOTE',          type: 'quote' },
+  { label: 'SEND INQUIRY',          type: 'quote' },
   { label: 'OUR SERVICES',         type: 'services' },
   { label: 'PRODUCTS & EQUIPMENT', type: 'equipment' },
   { label: 'PROJECTS',             type: 'projects' },
@@ -433,7 +434,7 @@ export default function LDSChatbot() {
       const summaryText = `Lead collected via Ask LDS Bot: ${data.name} (${data.company || 'N/A'}) - Project Type: ${data.type}, Location: ${data.location || 'N/A'}. Requirement: ${data.requirement}`
       const log = messages.map(m => `${m.role.toUpperCase()}: ${m.text}`).slice(-8)
 
-      await fetch('/api/quote', {
+      const res = await fetch('/api/quote', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -447,35 +448,39 @@ export default function LDSChatbot() {
           source: 'Ask LDS Bot',
           conversationSummary: summaryText,
           conversationLog: log,
+          idempotencyKey: `bot-${data.email}-${data.phone}-${data.requirement}`.slice(0, 120),
         }),
       })
+      const result = await res.json().catch(() => ({}))
+      return { ok: res.ok, ...result }
     } catch (err) {
-      console.error('[Ask LDS Bot lead submission error]:', err)
+      console.error('[Ask LDS Bot inquiry submission error]')
+      return { ok: false, error: 'Network error' }
     }
   }
 
   // Handle action click
-  const handleAction = useCallback((action: string) => {
+  const handleAction = useCallback(async (action: string) => {
     const actUpper = action.toUpperCase().trim()
 
     if (actUpper === 'CHAT ON WHATSAPP' || actUpper.includes('WHATSAPP')) {
       addMessage({ role: 'user', text: 'Chat on WhatsApp' })
       openWhatsApp()
-      sendResponse('Opening WhatsApp chat with LDS engineering desk...', ['GET A QUOTE', 'OUR SERVICES', 'DOWNLOAD CATALOG'])
+      sendResponse('Opening WhatsApp chat with LDS engineering desk...', ['SEND INQUIRY', 'OUR SERVICES', 'DOWNLOAD CATALOG'])
       return
     }
 
     if (actUpper === 'DOWNLOAD CATALOG' || actUpper.includes('CATALOG')) {
       addMessage({ role: 'user', text: 'Download Company Catalog' })
       downloadCatalog()
-      sendResponse('Downloading official LDS Company Catalog (PDF)...', ['GET A QUOTE', 'OUR SERVICES', 'CHAT ON WHATSAPP'])
+      sendResponse('Downloading official LDS Company Catalog (PDF)...', ['SEND INQUIRY', 'OUR SERVICES', 'CHAT ON WHATSAPP'])
       return
     }
 
-    if (actUpper === 'FILL QUOTE FORM') {
-      addMessage({ role: 'user', text: 'Fill Quote Form' })
+    if (actUpper === 'FILL INQUIRY FORM' || actUpper === 'FILL QUOTE FORM') {
+      addMessage({ role: 'user', text: 'Fill Inquiry Form' })
       openQuoteModal(enquiryData.type)
-      sendResponse('Opening official LDS Quote Form. You can fill your requirement details directly.', ['CHAT WITH LDS BOT', 'OUR SERVICES', 'CHAT ON WHATSAPP'])
+      sendResponse('Opening the LDS inquiry form. You can fill your requirement details directly.', ['CHAT WITH LDS BOT', 'OUR SERVICES', 'CHAT ON WHATSAPP'])
       setEnquiryStep('idle')
       return
     }
@@ -487,21 +492,24 @@ export default function LDSChatbot() {
       return
     }
 
-    if (actUpper === 'GET A QUOTE' || actUpper === 'START A PROJECT') {
-      addMessage({ role: 'user', text: 'Get a Quote' })
+    if (actUpper === 'SEND INQUIRY' || actUpper === 'START A PROJECT') {
+      addMessage({ role: 'user', text: 'Send Inquiry' })
       setEnquiryStep('mode_select')
       sendResponse(
-        'Would you prefer to fill our quick Quote Form or chat step-by-step with Ask LDS Bot to send your requirements to the LDS team?',
-        ['FILL QUOTE FORM', 'CHAT WITH LDS BOT', 'CHAT ON WHATSAPP']
+        'Would you prefer to fill our inquiry form or chat step-by-step with Ask LDS Bot to send your requirements to the LDS team?',
+        ['FILL INQUIRY FORM', 'CHAT WITH LDS BOT', 'CHAT ON WHATSAPP']
       )
       return
     }
 
     if (actUpper === 'SEND TO LDS TEAM') {
-      addMessage({ role: 'user', text: 'Send to LDS Team' })
-      submitLeadToBackend(enquiryData)
+      addMessage({ role: 'user', text: 'Send Inquiry' })
+      const result = await submitLeadToBackend(enquiryData)
       setEnquiryStep('done')
-      const confirmationMsg = `**REQUEST RECEIVED**\n\nThank you. Your project enquiry has been received by LDS. Our team will review your requirement and get in touch directly at **${enquiryData.phone}** / **${enquiryData.email}**.`
+      const reference = result.referenceId ? `\n\nInquiry reference: **${result.referenceId}**` : ''
+      const confirmationMsg = result.emailStatus === 'sent'
+        ? `**Thank you for contacting Lukhdatar & Sons.**\n\nYour inquiry has been received. Our team will review your requirements and contact you using the details provided.${reference}`
+        : `**Your inquiry has been saved.**\n\nWe could not confirm email delivery to the LDS team. Please try again, or contact LDS directly using the published email addresses.${reference}`
       sendResponse(confirmationMsg, ['OUR SERVICES', 'PRODUCTS & EQUIPMENT', 'DOWNLOAD CATALOG', 'CHAT ON WHATSAPP'])
       return
     }
@@ -576,7 +584,7 @@ export default function LDSChatbot() {
       setEnquiryStep('type')
       sendResponse(
         'What type of project do you need help with?',
-        ['Industrial Electrification', 'Substation / Switchyard', 'Transmission Lines', 'Underground Cable Work', 'Warehouse Electrification', 'Equipment Supply', 'Other']
+        ['Industrial Electrification', 'Substation / Switchyard', 'Transmission Lines', 'Underground Cable Work', 'Warehouse Electrification', 'Electrical Equipment Supply', 'Other']
       )
       return
     }

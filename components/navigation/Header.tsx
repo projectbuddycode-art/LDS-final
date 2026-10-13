@@ -106,7 +106,7 @@ export default function Header() {
 
           {/* Desktop nav links */}
           <div
-            style={{ display: 'flex', alignItems: 'center', gap: 'clamp(20px, 2.6vw, 36px)' }}
+            style={{ display: 'flex', alignItems: 'center', gap: 'clamp(14px, 1.8vw, 28px)' }}
             className="hidden-mobile"
           >
             {NAV_LINKS.map((link) => (
@@ -115,10 +115,11 @@ export default function Header() {
                 href={link.href}
                 className="header-nav-link"
                 style={{
-                  fontSize: '12px',
+                  fontSize: '11px',
                   fontWeight: 500,
-                  letterSpacing: '0.12em',
+                  letterSpacing: '0.08em',
                   textTransform: 'uppercase',
+                  whiteSpace: 'nowrap',
                   color: scrolled ? 'var(--text-secondary)' : 'rgba(250,248,245,0.85)',
                   textDecoration: 'none',
                   transition: 'color 250ms ease',
@@ -133,7 +134,7 @@ export default function Header() {
               </Link>
             ))}
 
-            {/* GET A QUOTE CTA — High contrast, fully accessible */}
+            {/* SEND INQUIRY CTA — High contrast, fully accessible */}
             <button
               onClick={() => openQuoteModal()}
               className="header-cta-btn"
@@ -175,7 +176,7 @@ export default function Header() {
                 }
               }}
             >
-              Get a Quote
+              Send Inquiry
               <span className="hdr-arrow" style={{ color: 'var(--accent-gold)', display: 'inline-block', transition: 'transform 300ms ease, color 250ms ease' }}>
                 ↗
               </span>
@@ -289,7 +290,7 @@ export default function Header() {
               e.currentTarget.style.color = '#FAF8F5'
             }}
           >
-            Get a Quote <span style={{ color: 'inherit' }}>↗</span>
+            Send Inquiry <span style={{ color: 'inherit' }}>↗</span>
           </button>
         </div>
       )}

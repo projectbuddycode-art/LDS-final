@@ -362,7 +362,7 @@ export default function ProjectsIndustriesPage() {
               className="cta-btn"
               style={{ cursor: 'pointer', fontFamily: 'inherit' }}
             >
-              Get a Quote ↗
+              Send Inquiry ↗
             </button>
           </div>
         </div>
