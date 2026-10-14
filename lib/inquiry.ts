@@ -16,6 +16,7 @@ export type ProjectType = (typeof PROJECT_TYPES)[number]
 export const DEFAULT_INQUIRY_RECIPIENTS = [
   'lukhdatar_sons@rediffmail.com',
   'lukhdatar6sons@gmail.com',
+  'lukhdatar6@gmail.com',
 ] as const
 
 export interface InquiryInput {
@@ -54,7 +55,16 @@ export interface InquiryRecord {
   emailDeliveries: Array<{ recipient: string; status: 'sent' | 'failed' | 'skipped'; error?: string }>
 }
 
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+export const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+export function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
 
 export function sanitizeLine(value: string, maxLength: number) {
   return value.replace(/[\r\n\u0000]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, maxLength)

@@ -58,11 +58,11 @@ export default function ProductsEquipmentPage() {
         }),
       })
       const data = await res.json()
-      if (res.ok && data.success) {
+      if (res.ok && data.success && data.notified) {
         setInquiryResult({ referenceId: data.referenceId, emailStatus: data.emailStatus })
         setFormSubmitted(true)
       } else {
-        setErrorMessage(data.error || 'Failed to submit the inquiry.')
+        setErrorMessage(data.error || 'The notification could not be sent. Please try again.')
       }
     } catch {
       setErrorMessage('Network error. Please try again or reach LDS directly.')

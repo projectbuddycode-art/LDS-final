@@ -140,7 +140,7 @@ export default function QuoteModal() {
       })
 
       const result = await res.json()
-      if (res.ok && result.success) {
+      if (res.ok && result.success && result.notified) {
         setInquiryResult({ referenceId: result.referenceId, emailStatus: result.emailStatus })
         setIsSubmitted(true)
         setFormData({
@@ -154,7 +154,7 @@ export default function QuoteModal() {
           message: '',
         })
       } else {
-        setErrorMessage(result.error || 'Failed to submit the inquiry. Please try again.')
+        setErrorMessage(result.error || 'The notification could not be sent. Please try again.')
       }
     } catch (err) {
       setErrorMessage('Network error. Please try again or reach LDS directly.')

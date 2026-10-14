@@ -57,8 +57,9 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
 
   useEffect(() => {
     // Preload Homepage Hero video in parallel while intro is running
+    let heroLink: HTMLLinkElement | null = null
     if (typeof document !== 'undefined') {
-      const heroLink = document.createElement('link')
+      heroLink = document.createElement('link')
       heroLink.rel = 'preload'
       heroLink.as = 'video'
       heroLink.href = MEDIA.heroVideo
@@ -71,7 +72,9 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
       const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
       if (prefersReduced) {
         finishSequence()
-        return
+        return () => {
+          if (heroLink?.parentNode) heroLink.parentNode.removeChild(heroLink)
+        }
       }
     }
 
@@ -118,12 +121,22 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
     video.addEventListener('ended', handleEnded)
     video.addEventListener('error', handleError)
 
-    // Guaranteed safety timeout (8.5s maximum): never leave website waiting indefinitely
-    fallbackTimerRef.current = setTimeout(() => {
-      if (!isDoneRef.current) {
-        finishSequence()
-      }
-    }, 8500)
+    const armFallback = (ms: number) => {
+      if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current)
+      fallbackTimerRef.current = setTimeout(() => {
+        if (!isDoneRef.current) {
+          finishSequence()
+        }
+      }, ms)
+    }
+
+    // Never leave the intro hanging; allow the actual clip to finish first
+    armFallback(12000)
+    const handleLoadedMetadata = () => {
+      if (!Number.isFinite(video.duration) || video.duration <= 0) return
+      armFallback(Math.min(20000, Math.max(9000, video.duration * 1000 + 1200)))
+    }
+    video.addEventListener('loadedmetadata', handleLoadedMetadata)
 
     // Escape, Space, or Enter skips intro
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -143,11 +156,13 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
         autoplayFailTimerRef.current = null
       }
       window.removeEventListener('keydown', handleKeyDown)
+      video.removeEventListener('loadedmetadata', handleLoadedMetadata)
       video.removeEventListener('loadeddata', handleCanPlay)
       video.removeEventListener('canplay', handleCanPlay)
       video.removeEventListener('playing', markPlaying)
       video.removeEventListener('ended', handleEnded)
       video.removeEventListener('error', handleError)
+      if (heroLink?.parentNode) heroLink.parentNode.removeChild(heroLink)
       try { video.pause() } catch { /* ignore */ }
     }
   }, [finishSequence, handleEnded, handleError])
@@ -160,7 +175,7 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
         position: 'fixed',
         inset: 0,
         width: '100%',
-        height: '100dvh',
+        height: '100vh',
         zIndex: 99999,
         background: '#0A0E12',
         display: 'flex',
@@ -187,7 +202,7 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
         }}
       >
         <img
-          src="/media/posters/intro-101.jpg"
+          src={MEDIA.introPoster}
           alt=""
           aria-hidden="true"
           fetchPriority="high"
@@ -221,7 +236,7 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
       >
         {/* Instant Fallback Poster */}
         <img
-          src="/media/posters/intro-101.jpg"
+          src={MEDIA.introPoster}
           alt=""
           aria-hidden="true"
           fetchPriority="high"
@@ -243,7 +258,8 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
         <video
           ref={videoRef}
           src={MEDIA.introVideo}
-          poster="/media/posters/intro-101.jpg"
+          poster={MEDIA.introPoster}
+          key={MEDIA.introVideo}
           autoPlay
           muted
           playsInline
@@ -342,37 +358,22 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
       <style>{`
         .intro-fullscreen-overlay {
           width: 100% !important;
-          height: 100dvh !important;
-          height: 100svh !important;
           height: 100vh !important;
+          height: 100dvh !important;
         }
 
-        /* Desktop widescreen: cinematic full-bleed cover */
-        @media (min-width: 1025px) {
-          .intro-ambient-backdrop {
-            display: none !important;
-          }
-          .intro-101-media {
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: cover !important;
-            object-position: center !important;
-          }
+        .intro-ambient-backdrop {
+          display: none !important;
         }
 
-        /* Mobile, tablet portrait, and vertical screens: 100% complete uncropped video frame */
-        @media (max-width: 1024px) and (orientation: portrait), (max-width: 768px) {
-          .intro-ambient-backdrop {
-            display: block !important;
-          }
-          .intro-101-media {
-            width: 100% !important;
-            height: 100% !important;
-            max-width: 100vw !important;
-            max-height: 100dvh !important;
-            object-fit: contain !important;
-            object-position: center center !important;
-          }
+        .intro-101-media {
+          width: 100% !important;
+          height: 100% !important;
+          object-fit: cover !important;
+          object-position: center center !important;
+        }
+
+        @media (max-width: 768px) {
           .intro-skip-btn {
             top: max(16px, env(safe-area-inset-top, 16px)) !important;
             right: max(16px, env(safe-area-inset-right, 16px)) !important;
@@ -381,18 +382,7 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
           }
         }
 
-        /* Mobile landscape: clean aspect ratio without notch clipping */
         @media (max-height: 500px) and (orientation: landscape) {
-          .intro-ambient-backdrop {
-            display: none !important;
-          }
-          .intro-101-media {
-            width: 100% !important;
-            height: 100% !important;
-            max-height: 100dvh !important;
-            object-fit: contain !important;
-            object-position: center center !important;
-          }
           .intro-skip-btn {
             top: max(10px, env(safe-area-inset-top, 10px)) !important;
             right: max(14px, env(safe-area-inset-right, 14px)) !important;

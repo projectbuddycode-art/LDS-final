@@ -3,11 +3,13 @@ import fs from 'fs'
 import os from 'os'
 import path from 'path'
 import { randomUUID } from 'crypto'
-import nodemailer from 'nodemailer'
+import { Resend } from 'resend'
 import {
   DEFAULT_INQUIRY_RECIPIENTS,
+  EMAIL_PATTERN,
   InquiryInput,
   InquiryRecord,
+  escapeHtml,
   validateInquiry,
 } from '@/lib/inquiry'
 
@@ -16,7 +18,7 @@ const RATE_LIMIT = 5
 const recentRequests = new Map<string, number[]>()
 
 function recipientsFromEnv() {
-  const configured = process.env.LDS_INQUIRY_TO || process.env.LDS_NOTIFICATION_EMAIL || ''
+  const configured = process.env.LDS_INQUIRY_TO || process.env.INQUIRY_TO || ''
   const extra = configured
     .split(',')
     .map((item) => item.trim().toLowerCase())
@@ -80,7 +82,7 @@ function formatWhen(date: Date) {
   return { iso: date.toISOString(), display: `${display} (Asia/Kolkata)` }
 }
 
-function emailBody(record: InquiryRecord) {
+function emailText(record: InquiryRecord) {
   return [
     'NEW WEBSITE INQUIRY — LUKHDATAR & SONS',
     '',
@@ -99,67 +101,142 @@ function emailBody(record: InquiryRecord) {
   ].filter(Boolean).join('\n')
 }
 
+function emailRow(label: string, value: string) {
+  return `<tr>
+    <td style="padding:8px 0;width:200px;font-weight:600;color:#111820;vertical-align:top;">${escapeHtml(label)}</td>
+    <td style="padding:8px 0;color:#333;white-space:pre-wrap;">${escapeHtml(value)}</td>
+  </tr>`
+}
+
+function emailHtml(record: InquiryRecord) {
+  return `<!DOCTYPE html>
+<html><body style="margin:0;padding:24px;font-family:Arial,sans-serif;background:#f7f5f1;color:#111820;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;margin:0 auto;background:#ffffff;border:1px solid #e6e1d6;padding:24px;">
+    <tr><td>
+      <p style="margin:0 0 8px;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:#c9a052;">Lukhdatar &amp; Sons</p>
+      <h1 style="margin:0 0 20px;font-size:22px;">New Website Inquiry</h1>
+      <table width="100%" cellpadding="0" cellspacing="0">
+        ${emailRow('Full Name', record.name)}
+        ${emailRow('Company Name', record.company)}
+        ${emailRow('Phone Number', record.phone)}
+        ${emailRow('Email Address', record.email)}
+        ${emailRow('Project Type', record.projectType)}
+        ${emailRow('Project Location', record.location)}
+        ${emailRow('Requirement / Project Details', record.requirement)}
+        ${emailRow('Additional Message', record.message)}
+        ${emailRow('Submission Source', record.source)}
+        ${emailRow('Submission Date and Time', record.submittedAtDisplay)}
+        ${emailRow('Inquiry Reference ID', record.referenceId)}
+        ${record.conversationSummary ? emailRow('Conversation Summary', record.conversationSummary) : ''}
+      </table>
+    </td></tr>
+  </table>
+</body></html>`
+}
+
 async function deliverToRecipients(record: InquiryRecord): Promise<{
   emailStatus: InquiryRecord['emailStatus']
   emailDeliveries: InquiryRecord['emailDeliveries']
 }> {
   const recipients = recipientsFromEnv()
-  if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
-    console.error(`[LDS Inquiry ${record.referenceId}] Email not sent. SMTP is not configured.`)
+  const apiKey = process.env.RESEND_API_KEY
+  const from = process.env.INQUIRY_FROM_EMAIL
+
+  if (!apiKey || !from) {
+    console.error(`[LDS Inquiry ${record.referenceId}] Email not sent. Resend is not configured.`)
     return {
-      emailStatus: 'pending_configuration' as const,
+      emailStatus: 'pending_configuration',
       emailDeliveries: recipients.map((recipient) => ({
         recipient,
         status: 'skipped' as const,
-        error: 'SMTP is not configured',
+        error: 'Resend is not configured',
       })),
     }
   }
 
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT) || 587,
-    secure: Number(process.env.SMTP_PORT) === 465,
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  })
-
-  const deliveries = await Promise.all(recipients.map(async (recipient) => {
-    try {
-      await transporter.sendMail({
-        from: process.env.SMTP_FROM || `"LDS Website" <${process.env.SMTP_USER}>`,
-        to: recipient,
-        replyTo: record.email,
-        subject: `New LDS Website Inquiry — ${record.name}`,
-        text: emailBody(record),
-      })
-      return { recipient, status: 'sent' as const }
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Delivery failed'
-      console.error(`[LDS Inquiry ${record.referenceId}] Delivery failed for one recipient: ${message}`)
-      return { recipient, status: 'failed' as const, error: message }
+  try {
+    const resend = new Resend(apiKey)
+    const payload: {
+      from: string
+      to: string[]
+      subject: string
+      text: string
+      html: string
+      replyTo?: string
+    } = {
+      from,
+      to: recipients,
+      subject: 'New Website Inquiry — LDS',
+      text: emailText(record),
+      html: emailHtml(record),
     }
-  }))
+    if (EMAIL_PATTERN.test(record.email)) {
+      payload.replyTo = record.email
+    }
 
-  const sent = deliveries.filter((item) => item.status === 'sent').length
-  const emailStatus: InquiryRecord['emailStatus'] = sent === deliveries.length ? 'sent' : sent > 0 ? 'partial' : 'failed'
-  return { emailStatus, emailDeliveries: deliveries }
+    const { data, error } = await resend.emails.send(payload)
+    if (error || !data?.id) {
+      console.error(`[LDS Inquiry ${record.referenceId}] Resend did not accept the notification.`)
+      return {
+        emailStatus: 'failed',
+        emailDeliveries: recipients.map((recipient) => ({
+          recipient,
+          status: 'failed' as const,
+          error: error?.message || 'Resend did not accept the message',
+        })),
+      }
+    }
+
+    return {
+      emailStatus: 'sent',
+      emailDeliveries: recipients.map((recipient) => ({
+        recipient,
+        status: 'sent' as const,
+      })),
+    }
+  } catch {
+    console.error(`[LDS Inquiry ${record.referenceId}] Resend request failed.`)
+    return {
+      emailStatus: 'failed',
+      emailDeliveries: recipients.map((recipient) => ({
+        recipient,
+        status: 'failed' as const,
+        error: 'Resend request failed',
+      })),
+    }
+  }
 }
 
-function publicResult(record: InquiryRecord, duplicate = false) {
-  const delivered = record.emailStatus === 'sent'
+function successResult(record: InquiryRecord, duplicate = false) {
   return {
     success: true,
     accepted: true,
     duplicate,
+    notified: true,
     referenceId: record.referenceId,
     emailStatus: record.emailStatus,
-    notified: delivered,
-    message: delivered
-      ? 'Inquiry accepted and notification sent to the LDS team.'
-      : 'Inquiry saved. Email notification to the LDS team is not confirmed.',
+    message: 'Inquiry accepted and notification sent to the LDS team.',
+  }
+}
+
+function pendingResult(record: InquiryRecord, duplicate = false) {
+  return {
+    success: false,
+    accepted: true,
+    duplicate,
+    notified: false,
+    referenceId: record.referenceId,
+    emailStatus: record.emailStatus,
+    error: 'Your inquiry was saved, but the notification could not be sent. Please try again.',
+  }
+}
+
+async function persist(leads: InquiryRecord[]) {
+  try {
+    writeLeads(leads)
+    return true
+  } catch {
+    return false
   }
 }
 
@@ -189,17 +266,18 @@ export async function POST(request: Request) {
       const existing = leads.find((lead) => lead.idempotencyKey === validated.value.idempotencyKey)
       if (existing) {
         if (existing.emailStatus === 'sent') {
-          return NextResponse.json(publicResult(existing, true))
+          return NextResponse.json(successResult(existing, true))
         }
         const delivery = await deliverToRecipients(existing)
         existing.emailStatus = delivery.emailStatus
         existing.emailDeliveries = delivery.emailDeliveries
-        try {
-          writeLeads(leads)
-        } catch {
+        if (!(await persist(leads))) {
           console.error(`[LDS Inquiry ${existing.referenceId}] Could not update saved inquiry after retry.`)
         }
-        return NextResponse.json(publicResult(existing, true))
+        if (existing.emailStatus === 'sent') {
+          return NextResponse.json(successResult(existing, true))
+        }
+        return NextResponse.json(pendingResult(existing, true), { status: 502 })
       }
     }
 
@@ -214,10 +292,8 @@ export async function POST(request: Request) {
       emailDeliveries: [],
     }
 
-    try {
-      leads.unshift(record)
-      writeLeads(leads)
-    } catch {
+    leads.unshift(record)
+    if (!(await persist(leads))) {
       console.error(`[LDS Inquiry ${record.referenceId}] Could not save inquiry record.`)
       return NextResponse.json(
         { error: 'The inquiry could not be saved. Please try again.' },
@@ -228,14 +304,15 @@ export async function POST(request: Request) {
     const delivery = await deliverToRecipients(record)
     record.emailStatus = delivery.emailStatus
     record.emailDeliveries = delivery.emailDeliveries
-    try {
-      writeLeads(leads)
-    } catch {
+    if (!(await persist(leads))) {
       console.error(`[LDS Inquiry ${record.referenceId}] Inquiry was saved but delivery status could not be updated.`)
     }
 
     console.log(`[LDS Inquiry ${record.referenceId}] accepted; email status: ${record.emailStatus}`)
-    return NextResponse.json(publicResult(record))
+    if (record.emailStatus === 'sent') {
+      return NextResponse.json(successResult(record))
+    }
+    return NextResponse.json(pendingResult(record), { status: 502 })
   } catch {
     console.error('[LDS Inquiry] Request could not be processed.')
     return NextResponse.json(

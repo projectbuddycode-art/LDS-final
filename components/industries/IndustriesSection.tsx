@@ -219,6 +219,7 @@ export default function IndustriesSection() {
   useEffect(() => {
     let isUnmounted = false
     let ctx: { revert: () => void } | undefined
+    let resizeCleanup: (() => void) | undefined
     const section = sectionRef.current
     const track = trackRef.current
     if (!section || !track || isMobile) return
@@ -252,17 +253,22 @@ export default function IndustriesSection() {
             anticipatePin: 1,
             scrub: 0.8,
             start: 'top top',
-            end: () => `+=${distance * 1.5}`,
+            end: () => `+=${getDistance() * 1.5}`,
             invalidateOnRefresh: true,
           },
         })
       }, section)
+
+      const onResize = () => ScrollTrigger.refresh()
+      window.addEventListener('resize', onResize, { passive: true })
+      resizeCleanup = () => window.removeEventListener('resize', onResize)
     }
 
     const timer = setTimeout(init, 100)
     return () => {
       isUnmounted = true
       clearTimeout(timer)
+      resizeCleanup?.()
       if (ctx) ctx.revert()
     }
   }, [isMobile, playActive, updateCardDOMStyles])
@@ -546,7 +552,7 @@ export default function IndustriesSection() {
                   aria-label={`Industry: ${industry.label}`}
                   style={{
                     flexShrink: 0,
-                    width: 'calc(100vw - 48px)',
+                    width: 'min(340px, 100%)',
                     maxWidth: '340px',
                     height: '420px',
                     scrollSnapAlign: 'center',

@@ -7,7 +7,8 @@ const transformersVideo = new URL('../Transformers_inside_electrical_p…_202609
 
 export const MEDIA = {
   // ── Intro + Hero ─────────────────────────────────────────
-  introVideo: '/media/intro-101.mp4',
+  introVideo: '/media/new-intro.mp4',
+  introPoster: '/media/posters/new-intro.jpg',
   heroVideo: '/media/hero-bg.mp4',
 
   // ── Leadership ───────────────────────────────────────────

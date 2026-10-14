@@ -66,12 +66,17 @@ img, video, svg, canvas {
   max-width: 100%;
 }
 
+.intro-101-media {
+  max-width: none;
+}
+
 html {
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   scroll-behavior: auto; /* Lenis controls smooth scroll */
+  overflow-x: hidden;
 }
 
 body {
