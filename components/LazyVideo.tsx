@@ -31,9 +31,7 @@ function LazyVideo({
   const hasErrorRef = useRef(false)
   const isRevealedRef = useRef(false)
   const isUnmountedRef = useRef(false)
-  const [mediaAttached, setMediaAttached] = useState(
-    () => preloadImmediate || typeof IntersectionObserver === 'undefined'
-  )
+  const [mediaAttached, setMediaAttached] = useState(preloadImmediate)
 
   const revealVideo = useCallback(() => {
     if (isUnmountedRef.current || isRevealedRef.current) return

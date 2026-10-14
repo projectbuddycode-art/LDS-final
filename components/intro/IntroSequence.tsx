@@ -176,6 +176,7 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
         inset: 0,
         width: '100%',
         height: '100vh',
+        minHeight: '100svh',
         zIndex: 99999,
         background: '#0A0E12',
         display: 'flex',
@@ -185,7 +186,7 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
         opacity: 1,
         willChange: 'opacity',
       }}
-      aria-label="LDS Cinematic Intro 101"
+      aria-label="Lukhdatar and Sons cinematic intro"
     >
       {/* ── Ambient Theater Glow Backdrop Layer (Active on Mobile/Portrait to eliminate harsh letterboxing) ── */}
       <div
@@ -263,8 +264,10 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
           autoPlay
           muted
           playsInline
+          disablePictureInPicture
           loop={false}
           preload="auto"
+          controls={false}
           onPlaying={() => setIsVideoPlaying(true)}
           onTimeUpdate={(e) => {
             const target = e.currentTarget
@@ -358,8 +361,12 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
       <style>{`
         .intro-fullscreen-overlay {
           width: 100% !important;
+          max-width: 100% !important;
           height: 100vh !important;
+          height: 100svh !important;
           height: 100dvh !important;
+          inset: 0 !important;
+          overflow: hidden !important;
         }
 
         .intro-ambient-backdrop {
@@ -369,11 +376,16 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
         .intro-101-media {
           width: 100% !important;
           height: 100% !important;
+          max-width: none !important;
           object-fit: cover !important;
           object-position: center center !important;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 768px) and (orientation: portrait) {
+          .intro-101-media {
+            object-position: center 38% !important;
+          }
+
           .intro-skip-btn {
             top: max(16px, env(safe-area-inset-top, 16px)) !important;
             right: max(16px, env(safe-area-inset-right, 16px)) !important;
@@ -383,6 +395,10 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
         }
 
         @media (max-height: 500px) and (orientation: landscape) {
+          .intro-101-media {
+            object-position: center 42% !important;
+          }
+
           .intro-skip-btn {
             top: max(10px, env(safe-area-inset-top, 10px)) !important;
             right: max(14px, env(safe-area-inset-right, 14px)) !important;
@@ -390,6 +406,11 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
             font-size: 10px !important;
             min-height: 36px !important;
           }
+        }
+
+        .intro-skip-btn:focus-visible {
+          outline: 2px solid var(--accent-gold);
+          outline-offset: 3px;
         }
 
         .intro-skip-btn:active {

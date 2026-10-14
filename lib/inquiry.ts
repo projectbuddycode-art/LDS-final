@@ -16,7 +16,6 @@ export type ProjectType = (typeof PROJECT_TYPES)[number]
 export const DEFAULT_INQUIRY_RECIPIENTS = [
   'lukhdatar_sons@rediffmail.com',
   'lukhdatar6sons@gmail.com',
-  'lukhdatar6@gmail.com',
 ] as const
 
 export interface InquiryInput {

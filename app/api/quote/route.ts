@@ -23,7 +23,8 @@ function recipientsFromEnv() {
     .split(',')
     .map((item) => item.trim().toLowerCase())
     .filter((item) => item.includes('@'))
-  return Array.from(new Set([...DEFAULT_INQUIRY_RECIPIENTS, ...extra]))
+  if (extra.length > 0) return Array.from(new Set(extra))
+  return [...DEFAULT_INQUIRY_RECIPIENTS]
 }
 
 function clientKey(request: Request) {

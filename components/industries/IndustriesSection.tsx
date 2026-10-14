@@ -5,7 +5,6 @@ import { MEDIA } from '@/data/media'
 import { INDUSTRIES } from '@/data/content'
 import {
   attachSrcOnce,
-  pauseAllExcept,
   pauseAllVideos,
   prepareVideo,
   safePause,
@@ -378,6 +377,7 @@ export default function IndustriesSection() {
                   data-industry-card
                   aria-label={`Industry: ${industry.label}`}
                   onPointerEnter={() => handleDesktopPointerEnter(index)}
+                  onClick={() => handleDesktopPointerEnter(index)}
                   style={{
                     flexShrink: 0,
                     width: 'clamp(280px, 26vw, 380px)',
@@ -552,8 +552,8 @@ export default function IndustriesSection() {
                   aria-label={`Industry: ${industry.label}`}
                   style={{
                     flexShrink: 0,
-                    width: 'min(340px, 100%)',
-                    maxWidth: '340px',
+                    width: 'min(340px, calc(100vw - (var(--container-px) * 2)))',
+                    maxWidth: 'min(340px, calc(100vw - (var(--container-px) * 2)))',
                     height: '420px',
                     scrollSnapAlign: 'center',
                     position: 'relative',
