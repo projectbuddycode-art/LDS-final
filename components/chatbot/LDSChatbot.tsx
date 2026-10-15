@@ -33,7 +33,7 @@ We provide complete electrical solutions from design and equipment supply to ins
 • **Company Catalog Download & Direct Quotes**
 
 Would you like us to send your requirement to the LDS team?`,
-    actions: ['SEND INQUIRY', 'OUR SERVICES', 'PRODUCTS & EQUIPMENT', 'PROJECTS', 'DOWNLOAD CATALOG', 'CHAT ON WHATSAPP'],
+    actions: ['SEND INQUIRY', 'OUR SERVICES', 'PRODUCTS & EQUIPMENT', 'PROJECTS', 'DOWNLOAD CATALOG'],
   },
 
   // 2. COMPANY BACKGROUND & HISTORY
@@ -269,7 +269,7 @@ Would you like us to send your requirement to the LDS team?`,
   Mr. Shree Mangalam Sureka (Current Owner)
 
 Would you like to submit your project requirements directly to the LDS team now?`,
-    actions: ['SEND INQUIRY', 'CHAT ON WHATSAPP', 'DOWNLOAD CATALOG'],
+    actions: ['SEND INQUIRY', 'DOWNLOAD CATALOG'],
   },
 ]
 
@@ -281,17 +281,16 @@ const FALLBACK_TOPIC: KnowledgeTopic = {
 Lukhdatar & Sons is a turnkey electrical infrastructure contractor established in 1997, specializing in substations up to 220KV, transmission lines up to 400KV, underground cabling up to 66KV, industrial electrification, and equipment supply.
 
 Would you like us to collect your project requirement and send it directly to the LDS team for technical confirmation?`,
-  actions: ['SEND INQUIRY', 'CHAT ON WHATSAPP', 'OUR SERVICES', 'DOWNLOAD CATALOG'],
+  actions: ['SEND INQUIRY', 'OUR SERVICES', 'DOWNLOAD CATALOG'],
 }
 
-// 6 Core Quick Action Definitions
+// Core Quick Action Definitions
 const CORE_QUICK_ACTIONS = [
   { label: 'SEND INQUIRY',          type: 'quote' },
   { label: 'OUR SERVICES',         type: 'services' },
   { label: 'PRODUCTS & EQUIPMENT', type: 'equipment' },
   { label: 'PROJECTS',             type: 'projects' },
   { label: 'DOWNLOAD CATALOG',     type: 'catalog' },
-  { label: 'CHAT ON WHATSAPP',     type: 'whatsapp' },
 ]
 
 type EnquiryStep = 'idle' | 'mode_select' | 'name' | 'company' | 'phone' | 'email' | 'type' | 'location' | 'requirement' | 'confirm' | 'done'
@@ -388,13 +387,6 @@ export default function LDSChatbot() {
     }
   }, [isOpen])
 
-  // Direct actions
-  const openWhatsApp = useCallback(() => {
-    const phone = process.env.NEXT_PUBLIC_LDS_WHATSAPP_NUMBER || '919433059863'
-    const msg = encodeURIComponent('Hello LDS, I would like to know more about your electrical services/project.')
-    window.open(`https://wa.me/${phone}?text=${msg}`, '_blank', 'noopener,noreferrer')
-  }, [])
-
   const downloadCatalog = useCallback(() => {
     const link = document.createElement('a')
     link.href = '/LDS-prospectus.pdf'
@@ -463,24 +455,17 @@ export default function LDSChatbot() {
   const handleAction = useCallback(async (action: string) => {
     const actUpper = action.toUpperCase().trim()
 
-    if (actUpper === 'CHAT ON WHATSAPP' || actUpper.includes('WHATSAPP')) {
-      addMessage({ role: 'user', text: 'Chat on WhatsApp' })
-      openWhatsApp()
-      sendResponse('Opening WhatsApp chat with LDS engineering desk...', ['SEND INQUIRY', 'OUR SERVICES', 'DOWNLOAD CATALOG'])
-      return
-    }
-
     if (actUpper === 'DOWNLOAD CATALOG' || actUpper.includes('CATALOG')) {
       addMessage({ role: 'user', text: 'Download Company Catalog' })
       downloadCatalog()
-      sendResponse('Downloading official LDS Company Catalog (PDF)...', ['SEND INQUIRY', 'OUR SERVICES', 'CHAT ON WHATSAPP'])
+      sendResponse('Downloading official LDS Company Catalog (PDF)...', ['SEND INQUIRY', 'OUR SERVICES'])
       return
     }
 
     if (actUpper === 'FILL INQUIRY FORM' || actUpper === 'FILL QUOTE FORM') {
       addMessage({ role: 'user', text: 'Fill Inquiry Form' })
       openQuoteModal(enquiryData.type)
-      sendResponse('Opening the LDS inquiry form. You can fill your requirement details directly.', ['CHAT WITH LDS BOT', 'OUR SERVICES', 'CHAT ON WHATSAPP'])
+      sendResponse('Opening the LDS inquiry form. You can fill your requirement details directly.', ['CHAT WITH LDS BOT', 'OUR SERVICES'])
       setEnquiryStep('idle')
       return
     }
@@ -497,7 +482,7 @@ export default function LDSChatbot() {
       setEnquiryStep('mode_select')
       sendResponse(
         'Would you prefer to fill our inquiry form or chat step-by-step with Ask LDS Bot to send your requirements to the LDS team?',
-        ['FILL INQUIRY FORM', 'CHAT WITH LDS BOT', 'CHAT ON WHATSAPP']
+        ['FILL INQUIRY FORM', 'CHAT WITH LDS BOT']
       )
       return
     }
@@ -510,7 +495,7 @@ export default function LDSChatbot() {
       const confirmationMsg = result.emailStatus === 'sent'
         ? `**Thank you for contacting Lukhdatar & Sons.**\n\nYour inquiry has been received. Our team will review your requirements and contact you using the details provided.${reference}`
         : `**Your inquiry has been saved.**\n\nWe could not confirm email delivery to the LDS team. Please try again, or contact LDS directly using the published email addresses.${reference}`
-      sendResponse(confirmationMsg, ['OUR SERVICES', 'PRODUCTS & EQUIPMENT', 'DOWNLOAD CATALOG', 'CHAT ON WHATSAPP'])
+      sendResponse(confirmationMsg, ['OUR SERVICES', 'PRODUCTS & EQUIPMENT', 'DOWNLOAD CATALOG'])
       return
     }
 
@@ -554,7 +539,7 @@ export default function LDSChatbot() {
     addMessage({ role: 'user', text: action })
     const response = matchKnowledgeQuery(action)
     sendResponse(response.text, response.actions, response.scrollTo)
-  }, [addMessage, openWhatsApp, downloadCatalog, sendResponse, enquiryData, enquiryStep])
+  }, [addMessage, downloadCatalog, sendResponse, enquiryData, enquiryStep])
 
   // Handle conversational lead input
   const handleEnquiryInput = useCallback((value: string) => {
@@ -608,7 +593,7 @@ export default function LDSChatbot() {
       setEnquiryData(updated)
       setEnquiryStep('confirm')
       const preview = `Thanks. I have your requirement:\n\n• **Name**: ${updated.name}\n• **Company**: ${updated.company || 'N/A'}\n• **Phone**: ${updated.phone}\n• **Email**: ${updated.email}\n• **Project Type**: ${updated.type}\n• **Location**: ${updated.location || 'N/A'}\n• **Requirement**: ${value}\n\nShall I send these details to the LDS team?`
-      sendResponse(preview, ['SEND TO LDS TEAM', 'EDIT DETAILS', 'CHAT ON WHATSAPP'])
+      sendResponse(preview, ['SEND TO LDS TEAM', 'EDIT DETAILS'])
       return
     }
   }, [enquiryStep, enquiryData, sendResponse])
@@ -784,9 +769,9 @@ export default function LDSChatbot() {
                         fontSize: '11px',
                         fontWeight: 600,
                         letterSpacing: '0.06em',
-                        color: a.type === 'whatsapp' ? '#22c55e' : (a.type === 'quote' ? '#FAF8F5' : 'rgba(250, 248, 245, 0.90)'),
+                        color: a.type === 'quote' ? '#FAF8F5' : 'rgba(250, 248, 245, 0.90)',
                         background: a.type === 'quote' ? 'rgba(201, 160, 82, 0.22)' : '#182230',
-                        border: a.type === 'whatsapp' ? '1px solid rgba(34, 197, 94, 0.45)' : (a.type === 'quote' ? '1px solid var(--accent-gold)' : '1px solid rgba(250, 248, 245, 0.22)'),
+                        border: a.type === 'quote' ? '1px solid var(--accent-gold)' : '1px solid rgba(250, 248, 245, 0.22)',
                         borderRadius: '2px',
                         cursor: 'pointer',
                         transition: 'all 0.2s ease',
@@ -797,8 +782,8 @@ export default function LDSChatbot() {
                         e.currentTarget.style.background = 'var(--accent-gold)'
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = a.type === 'whatsapp' ? 'rgba(34, 197, 94, 0.45)' : (a.type === 'quote' ? 'var(--accent-gold)' : '1px solid rgba(250, 248, 245, 0.22)')
-                        e.currentTarget.style.color = a.type === 'whatsapp' ? '#22c55e' : (a.type === 'quote' ? '#FAF8F5' : 'rgba(250, 248, 245, 0.90)')
+                        e.currentTarget.style.borderColor = a.type === 'quote' ? 'var(--accent-gold)' : '1px solid rgba(250, 248, 245, 0.22)'
+                        e.currentTarget.style.color = a.type === 'quote' ? '#FAF8F5' : 'rgba(250, 248, 245, 0.90)'
                         e.currentTarget.style.background = a.type === 'quote' ? 'rgba(201, 160, 82, 0.22)' : '#182230'
                       }}
                     >
@@ -849,9 +834,9 @@ export default function LDSChatbot() {
                           fontSize: '11px',
                           fontWeight: 600,
                           letterSpacing: '0.06em',
-                          color: act.includes('WHATSAPP') ? '#22c55e' : (act.includes('QUOTE') || act.includes('SEND') ? '#FAF8F5' : '#FAF8F5'),
+                          color: '#FAF8F5',
                           background: (act.includes('QUOTE') || act.includes('SEND')) ? 'rgba(201, 160, 82, 0.22)' : '#182230',
-                          border: act.includes('WHATSAPP') ? '1px solid rgba(34, 197, 94, 0.45)' : (act.includes('QUOTE') || act.includes('SEND') ? '1px solid var(--accent-gold)' : '1px solid rgba(250, 248, 245, 0.22)'),
+                          border: (act.includes('QUOTE') || act.includes('SEND')) ? '1px solid var(--accent-gold)' : '1px solid rgba(250, 248, 245, 0.22)',
                           borderRadius: '2px',
                           cursor: 'pointer',
                           transition: 'all 0.2s ease',
@@ -862,8 +847,8 @@ export default function LDSChatbot() {
                           e.currentTarget.style.background = 'var(--accent-gold)'
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.borderColor = act.includes('WHATSAPP') ? 'rgba(34, 197, 94, 0.45)' : (act.includes('QUOTE') || act.includes('SEND') ? 'var(--accent-gold)' : '1px solid rgba(250, 248, 245, 0.22)')
-                          e.currentTarget.style.color = act.includes('WHATSAPP') ? '#22c55e' : '#FAF8F5'
+                          e.currentTarget.style.borderColor = (act.includes('QUOTE') || act.includes('SEND')) ? 'var(--accent-gold)' : '1px solid rgba(250, 248, 245, 0.22)'
+                          e.currentTarget.style.color = '#FAF8F5'
                           e.currentTarget.style.background = (act.includes('QUOTE') || act.includes('SEND')) ? 'rgba(201, 160, 82, 0.22)' : '#182230'
                         }}
                       >

@@ -56,25 +56,12 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
   }, [finishSequence])
 
   useEffect(() => {
-    // Preload Homepage Hero video in parallel while intro is running
-    let heroLink: HTMLLinkElement | null = null
-    if (typeof document !== 'undefined') {
-      heroLink = document.createElement('link')
-      heroLink.rel = 'preload'
-      heroLink.as = 'video'
-      heroLink.href = MEDIA.heroVideo
-      heroLink.type = 'video/mp4'
-      document.head.appendChild(heroLink)
-    }
-
     // Respect prefers-reduced-motion
     if (typeof window !== 'undefined') {
       const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
       if (prefersReduced) {
         finishSequence()
-        return () => {
-          if (heroLink?.parentNode) heroLink.parentNode.removeChild(heroLink)
-        }
+        return
       }
     }
 
@@ -162,7 +149,6 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
       video.removeEventListener('playing', markPlaying)
       video.removeEventListener('ended', handleEnded)
       video.removeEventListener('error', handleError)
-      if (heroLink?.parentNode) heroLink.parentNode.removeChild(heroLink)
       try { video.pause() } catch { /* ignore */ }
     }
   }, [finishSequence, handleEnded, handleError])
@@ -233,6 +219,7 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 2,
+          pointerEvents: 'none',
         }}
       >
         {/* Instant Fallback Poster */}
@@ -241,7 +228,7 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
           alt=""
           aria-hidden="true"
           fetchPriority="high"
-          className="intro-101-media intro-101-poster"
+          className="intro-media intro-poster"
           style={{
             position: 'absolute',
             inset: 0,
@@ -292,7 +279,7 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
           onEnded={handleEnded}
           onError={handleError}
           aria-hidden="true"
-          className="intro-101-media intro-101-video"
+          className="intro-media intro-video"
           style={{
             position: 'absolute',
             inset: 0,
@@ -302,6 +289,7 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
             objectPosition: 'center',
             display: 'block',
             zIndex: 3,
+            pointerEvents: 'none',
             opacity: isVideoPlaying ? 1 : 0,
             transition: 'opacity 350ms cubic-bezier(0.4, 0, 0.2, 1)',
             backgroundColor: 'transparent',
@@ -360,8 +348,8 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
 
       <style>{`
         .intro-fullscreen-overlay {
-          width: 100% !important;
-          max-width: 100% !important;
+          width: 100vw !important;
+          max-width: none !important;
           height: 100vh !important;
           height: 100svh !important;
           height: 100dvh !important;
@@ -370,22 +358,18 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
         }
 
         .intro-ambient-backdrop {
-          display: none !important;
+          display: block !important;
         }
 
-        .intro-101-media {
+        .intro-media {
           width: 100% !important;
           height: 100% !important;
           max-width: none !important;
-          object-fit: cover !important;
+          object-fit: contain !important;
           object-position: center center !important;
         }
 
         @media (max-width: 768px) and (orientation: portrait) {
-          .intro-101-media {
-            object-position: center 38% !important;
-          }
-
           .intro-skip-btn {
             top: max(16px, env(safe-area-inset-top, 16px)) !important;
             right: max(16px, env(safe-area-inset-right, 16px)) !important;
@@ -395,10 +379,6 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
         }
 
         @media (max-height: 500px) and (orientation: landscape) {
-          .intro-101-media {
-            object-position: center 42% !important;
-          }
-
           .intro-skip-btn {
             top: max(10px, env(safe-area-inset-top, 10px)) !important;
             right: max(14px, env(safe-area-inset-right, 14px)) !important;
