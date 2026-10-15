@@ -8,7 +8,7 @@ export const COMPANY = {
   location: 'Kolkata, West Bengal, India',
   registeredAddress: 'Eight Mandir Street, 4th Floor, Kolkata – 700073',
   projectOffice: '46C Jawaharlal Nehru Road, Everest House, Office No. 6B, Kolkata – 700071',
-  emails: ['lukhdatar_sons@rediffmail.com', 'lukhdatar6sons@gmail.com'],
+  emails: ['lukhdatar_sons@rediffmail.com', 'ukhdatar6sons@gmail.com'],
   contactPersons: ['Mr. Lalit Kumar Sureka', 'Mr. Shree Mangalam Sureka'],
   whatsappNumber: '+919831000000', // Configurable LDS WhatsApp number
   whatsappPrefill: 'Hello LDS, I would like to know more about your electrical services and projects.',

@@ -365,8 +365,22 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
           width: 100% !important;
           height: 100% !important;
           max-width: none !important;
-          object-fit: contain !important;
-          object-position: center center !important;
+          object-fit: cover !important;
+          object-position: center 50% !important;
+        }
+
+        @media (max-width: 768px) and (orientation: portrait) {
+          .intro-media {
+            object-fit: contain !important;
+            object-position: center center !important;
+          }
+        }
+
+        @media (max-width: 900px) and (orientation: landscape) {
+          .intro-media {
+            object-fit: cover !important;
+            object-position: center 50% !important;
+          }
         }
 
         @media (max-width: 768px) and (orientation: portrait) {

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 
-import { PROJECT_TYPES, isValidPhone, validateInquiry } from '@/lib/inquiry'
+import { PROJECT_TYPES, isNotificationAccepted, isValidPhone, validateInquiry } from '@/lib/inquiry'
 
 export { PROJECT_TYPES }
 
@@ -140,7 +140,7 @@ export default function QuoteModal() {
       })
 
       const result = await res.json()
-      if (res.ok && result.success && result.notified) {
+      if (res.ok && result.success && result.providerAccepted) {
         setInquiryResult({ referenceId: result.referenceId, emailStatus: result.emailStatus })
         setIsSubmitted(true)
         setFormData({
@@ -533,12 +533,12 @@ export default function QuoteModal() {
             </div>
 
             <h2 className="t-headline" style={{ fontSize: '28px', marginBottom: '16px', color: 'var(--text-primary)' }}>
-              {inquiryResult?.emailStatus === 'sent' ? 'Thank you for contacting Lukhdatar & Sons.' : 'Your inquiry has been saved.'}
+              {isNotificationAccepted(inquiryResult?.emailStatus) ? 'Thank you for contacting Lukhdatar & Sons.' : 'Your inquiry has been saved.'}
             </h2>
 
             <p className="t-body" style={{ maxWidth: '480px', margin: '0 auto 16px', lineHeight: 1.7 }}>
-              {inquiryResult?.emailStatus === 'sent'
-                ? 'Your inquiry has been received. Our team will review your requirements and contact you using the details provided.'
+              {isNotificationAccepted(inquiryResult?.emailStatus)
+                ? 'Resend accepted the notification request. Inbox delivery is not confirmed; our team will review your requirements and contact you using the details provided.'
                 : 'Your inquiry was saved, but email delivery to the LDS team is not confirmed. Please try again or contact LDS directly using the published email addresses.'}
             </p>
             {inquiryResult?.referenceId && (

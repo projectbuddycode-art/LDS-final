@@ -13,11 +13,6 @@ export const PROJECT_TYPES = [
 
 export type ProjectType = (typeof PROJECT_TYPES)[number]
 
-export const DEFAULT_INQUIRY_RECIPIENTS = [
-  'lukhdatar_sons@rediffmail.com',
-  'lukhdatar6sons@gmail.com',
-] as const
-
 export interface InquiryInput {
   name?: string
   company?: string
@@ -50,11 +45,15 @@ export interface InquiryRecord {
   submittedAt: string
   submittedAtDisplay: string
   status: 'accepted'
-  emailStatus: 'sent' | 'partial' | 'failed' | 'pending_configuration'
-  emailDeliveries: Array<{ recipient: string; status: 'sent' | 'failed' | 'skipped'; error?: string }>
+  emailStatus: 'accepted' | 'sent' | 'partial' | 'failed' | 'pending_configuration'
+  emailDeliveries: Array<{ recipient: string; status: 'accepted' | 'sent' | 'failed' | 'skipped'; error?: string }>
 }
 
 export const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+export function isNotificationAccepted(status?: string) {
+  return status === 'accepted' || status === 'sent'
+}
 
 export function escapeHtml(value: string) {
   return value

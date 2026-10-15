@@ -2,30 +2,19 @@ import { NextResponse } from 'next/server'
 import fs from 'fs'
 import os from 'os'
 import path from 'path'
-import { randomUUID } from 'crypto'
+import { createHash, randomUUID } from 'crypto'
 import { Resend } from 'resend'
 import {
-  DEFAULT_INQUIRY_RECIPIENTS,
-  EMAIL_PATTERN,
   InquiryInput,
   InquiryRecord,
   escapeHtml,
   validateInquiry,
 } from '@/lib/inquiry'
+import { deliverInquiryNotification, saveInquiryBeforeNotification } from '@/lib/notificationDelivery'
 
 const RATE_WINDOW_MS = 10 * 60 * 1000
 const RATE_LIMIT = 5
 const recentRequests = new Map<string, number[]>()
-
-function recipientsFromEnv() {
-  const configured = process.env.LDS_INQUIRY_TO || process.env.INQUIRY_TO || ''
-  const extra = configured
-    .split(',')
-    .map((item) => item.trim().toLowerCase())
-    .filter((item) => item.includes('@'))
-  if (extra.length > 0) return Array.from(new Set(extra))
-  return [...DEFAULT_INQUIRY_RECIPIENTS]
-}
 
 function clientKey(request: Request) {
   const forwarded = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
@@ -139,73 +128,66 @@ async function deliverToRecipients(record: InquiryRecord): Promise<{
   emailStatus: InquiryRecord['emailStatus']
   emailDeliveries: InquiryRecord['emailDeliveries']
 }> {
-  const recipients = recipientsFromEnv()
   const apiKey = process.env.RESEND_API_KEY
   const from = process.env.INQUIRY_FROM_EMAIL
-
-  if (!apiKey || !from) {
-    console.error(`[LDS Inquiry ${record.referenceId}] Email not sent. Resend is not configured.`)
-    return {
-      emailStatus: 'pending_configuration',
-      emailDeliveries: recipients.map((recipient) => ({
-        recipient,
-        status: 'skipped' as const,
-        error: 'Resend is not configured',
-      })),
-    }
+  let sdkSendInvoked = false
+  const notificationRecord = {
+    ...record,
+    providerIdempotencyKey: createHash('sha256')
+      .update(record.idempotencyKey || record.referenceId)
+      .digest('hex'),
   }
-
-  try {
-    const resend = new Resend(apiKey)
-    const payload: {
-      from: string
-      to: string[]
-      subject: string
-      text: string
-      html: string
-      replyTo?: string
-    } = {
+  const result = await deliverInquiryNotification(
+    notificationRecord,
+    {
+      apiKey,
       from,
-      to: recipients,
+    },
+    {
       subject: 'New Website Inquiry — LDS',
       text: emailText(record),
       html: emailHtml(record),
-    }
-    if (EMAIL_PATTERN.test(record.email)) {
-      payload.replyTo = record.email
-    }
-
-    const { data, error } = await resend.emails.send(payload)
-    if (error || !data?.id) {
-      console.error(`[LDS Inquiry ${record.referenceId}] Resend did not accept the notification.`)
-      return {
-        emailStatus: 'failed',
-        emailDeliveries: recipients.map((recipient) => ({
-          recipient,
-          status: 'failed' as const,
-          error: error?.message || 'Resend did not accept the message',
-        })),
+    },
+    async (payload, options) => {
+      if (!apiKey) {
+        throw new Error('Resend API key was not configured')
       }
+      const resend = new Resend(apiKey)
+      sdkSendInvoked = true
+      return resend.emails.send(payload, options)
     }
+  )
 
-    return {
-      emailStatus: 'sent',
-      emailDeliveries: recipients.map((recipient) => ({
-        recipient,
-        status: 'sent' as const,
-      })),
-    }
-  } catch {
-    console.error(`[LDS Inquiry ${record.referenceId}] Resend request failed.`)
-    return {
-      emailStatus: 'failed',
-      emailDeliveries: recipients.map((recipient) => ({
-        recipient,
-        status: 'failed' as const,
-        error: 'Resend request failed',
-      })),
-    }
+  if (result.missingConfiguration?.length) {
+    console.error(
+      JSON.stringify({
+        event: 'lds_inquiry_resend_skipped',
+        referenceId: record.referenceId,
+        missingConfiguration: result.missingConfiguration,
+      })
+    )
+  } else if (result.providerDiagnostic) {
+    console.error(
+      JSON.stringify({
+        event: result.providerDiagnostic.stage === 'provider_response'
+          ? 'lds_inquiry_resend_rejected'
+          : 'lds_inquiry_resend_sdk_exception',
+        referenceId: record.referenceId,
+        sdkSendInvoked,
+        ...result.providerDiagnostic,
+      })
+    )
+  } else if (result.providerMessageId) {
+    console.info(
+      JSON.stringify({
+        event: 'lds_inquiry_resend_accepted',
+        referenceId: record.referenceId,
+        providerMessageId: result.providerMessageId,
+        inboxDeliveryConfirmed: false,
+      })
+    )
   }
+  return result
 }
 
 function successResult(record: InquiryRecord, duplicate = false) {
@@ -214,21 +196,35 @@ function successResult(record: InquiryRecord, duplicate = false) {
     accepted: true,
     duplicate,
     notified: true,
+    providerAccepted: true,
+    inboxDeliveryConfirmed: false,
     referenceId: record.referenceId,
     emailStatus: record.emailStatus,
-    message: 'Inquiry accepted and notification sent to the LDS team.',
+    message: 'Resend accepted the notification request. Inbox delivery is not confirmed.',
   }
 }
 
 function pendingResult(record: InquiryRecord, duplicate = false) {
+  const providerFailure = record.emailStatus === 'failed'
+  const diagnostic = record.emailDeliveries[0]?.error
+  const reason = record.emailStatus === 'pending_configuration'
+    ? 'Email notifications are not configured.'
+    : `The email provider did not accept the notification${diagnostic ? ` (${diagnostic})` : ''}.`
   return {
     success: false,
     accepted: true,
     duplicate,
     notified: false,
+    providerAccepted: false,
+    inboxDeliveryConfirmed: false,
     referenceId: record.referenceId,
+    diagnosticReference: record.referenceId,
     emailStatus: record.emailStatus,
-    error: 'Your inquiry was saved, but the notification could not be sent. Please try again.',
+    notificationDiagnostic: record.emailDeliveries[0]?.error,
+    providerStatus: providerFailure
+      ? diagnostic?.match(/_(\d{3})$/)?.[1]
+      : undefined,
+    error: `Your inquiry was saved (reference ${record.referenceId}), but ${reason} Your form details remain available; please retry later or contact LDS directly.`,
   }
 }
 
@@ -266,7 +262,7 @@ export async function POST(request: Request) {
     if (validated.value.idempotencyKey) {
       const existing = leads.find((lead) => lead.idempotencyKey === validated.value.idempotencyKey)
       if (existing) {
-        if (existing.emailStatus === 'sent') {
+        if (existing.emailStatus === 'accepted' || existing.emailStatus === 'sent') {
           return NextResponse.json(successResult(existing, true))
         }
         const delivery = await deliverToRecipients(existing)
@@ -275,7 +271,7 @@ export async function POST(request: Request) {
         if (!(await persist(leads))) {
           console.error(`[LDS Inquiry ${existing.referenceId}] Could not update saved inquiry after retry.`)
         }
-        if (existing.emailStatus === 'sent') {
+        if (existing.emailStatus === 'accepted' || existing.emailStatus === 'sent') {
           return NextResponse.json(successResult(existing, true))
         }
         return NextResponse.json(pendingResult(existing, true), { status: 502 })
@@ -294,7 +290,11 @@ export async function POST(request: Request) {
     }
 
     leads.unshift(record)
-    if (!(await persist(leads))) {
+    const savedAndNotified = await saveInquiryBeforeNotification(
+      () => persist(leads),
+      () => deliverToRecipients(record)
+    )
+    if (!savedAndNotified.saved) {
       console.error(`[LDS Inquiry ${record.referenceId}] Could not save inquiry record.`)
       return NextResponse.json(
         { error: 'The inquiry could not be saved. Please try again.' },
@@ -302,7 +302,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const delivery = await deliverToRecipients(record)
+    const delivery = savedAndNotified.notification
     record.emailStatus = delivery.emailStatus
     record.emailDeliveries = delivery.emailDeliveries
     if (!(await persist(leads))) {
@@ -310,12 +310,15 @@ export async function POST(request: Request) {
     }
 
     console.log(`[LDS Inquiry ${record.referenceId}] accepted; email status: ${record.emailStatus}`)
-    if (record.emailStatus === 'sent') {
+    if (record.emailStatus === 'accepted' || record.emailStatus === 'sent') {
       return NextResponse.json(successResult(record))
     }
     return NextResponse.json(pendingResult(record), { status: 502 })
-  } catch {
-    console.error('[LDS Inquiry] Request could not be processed.')
+  } catch (cause) {
+    const errorName = cause instanceof Error
+      ? cause.name.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 48)
+      : 'UnknownError'
+    console.error(`[LDS Inquiry] Request processing failed (${errorName || 'UnknownError'}).`)
     return NextResponse.json(
       { error: 'Failed to process the inquiry. Please try again or contact LDS directly.' },
       { status: 500 }

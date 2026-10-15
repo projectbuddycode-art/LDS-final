@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { COMPANY } from '@/data/content'
+import { isNotificationAccepted } from '@/lib/inquiry'
 import { openQuoteModal } from '@/lib/quoteEvents'
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -492,8 +493,8 @@ export default function LDSChatbot() {
       const result = await submitLeadToBackend(enquiryData)
       setEnquiryStep('done')
       const reference = result.referenceId ? `\n\nInquiry reference: **${result.referenceId}**` : ''
-      const confirmationMsg = result.emailStatus === 'sent'
-        ? `**Thank you for contacting Lukhdatar & Sons.**\n\nYour inquiry has been received. Our team will review your requirements and contact you using the details provided.${reference}`
+      const confirmationMsg = isNotificationAccepted(result.emailStatus)
+        ? `**Thank you for contacting Lukhdatar & Sons.**\n\nResend accepted the notification request. Inbox delivery is not confirmed. Our team will review your requirements and contact you using the details provided.${reference}`
         : `**Your inquiry has been saved.**\n\nWe could not confirm email delivery to the LDS team. Please try again, or contact LDS directly using the published email addresses.${reference}`
       sendResponse(confirmationMsg, ['OUR SERVICES', 'PRODUCTS & EQUIPMENT', 'DOWNLOAD CATALOG'])
       return

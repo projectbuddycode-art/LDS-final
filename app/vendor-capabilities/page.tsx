@@ -6,7 +6,7 @@ import BackNav from '@/components/navigation/BackNav'
 import { EQUIPMENT_CATEGORIES, EQUIPMENT_RANGE } from '@/data/content'
 import { MEDIA } from '@/data/media'
 import LazyVideo from '@/components/LazyVideo'
-import { PROJECT_TYPES, isValidPhone, validateInquiry } from '@/lib/inquiry'
+import { PROJECT_TYPES, isNotificationAccepted, isValidPhone, validateInquiry } from '@/lib/inquiry'
 
 export default function ProductsEquipmentPage() {
   const [formSubmitted, setFormSubmitted] = useState(false)
@@ -58,7 +58,7 @@ export default function ProductsEquipmentPage() {
         }),
       })
       const data = await res.json()
-      if (res.ok && data.success && data.notified) {
+      if (res.ok && data.success && data.providerAccepted) {
         setInquiryResult({ referenceId: data.referenceId, emailStatus: data.emailStatus })
         setFormSubmitted(true)
       } else {
@@ -400,11 +400,11 @@ export default function ProductsEquipmentPage() {
                     <span className="t-label">Submission Confirmed</span>
                   </div>
                   <h3 className="t-headline" style={{ fontSize: '22px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '12px' }}>
-                    {inquiryResult?.emailStatus === 'sent' ? 'Thank you for contacting Lukhdatar & Sons.' : 'Your inquiry has been saved.'}
+                    {isNotificationAccepted(inquiryResult?.emailStatus) ? 'Thank you for contacting Lukhdatar & Sons.' : 'Your inquiry has been saved.'}
                   </h3>
                   <p className="t-body" style={{ fontSize: '13.5px', color: 'var(--text-secondary)', lineHeight: 1.65, marginBottom: '12px' }}>
-                    {inquiryResult?.emailStatus === 'sent'
-                      ? 'Your inquiry has been received. Our team will review your requirements and contact you using the details provided.'
+                    {isNotificationAccepted(inquiryResult?.emailStatus)
+                      ? 'Resend accepted the notification request. Inbox delivery is not confirmed; our team will review your requirements and contact you using the details provided.'
                       : 'Your inquiry was saved, but email delivery to the LDS team is not confirmed. Please try again or contact LDS directly using the published email addresses.'}
                   </p>
                   {inquiryResult?.referenceId && (
