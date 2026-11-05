@@ -362,7 +362,7 @@ export default function CompanyPage() {
                 <div style={{ position: 'relative', width: '100%', aspectRatio: '4/3', overflow: 'hidden', background: 'var(--surface)' }}>
                   <Image
                     src={leader.imageKey === 'founder' ? '/media/founder-lalit.png' : '/media/md-shree.png'}
-                    alt={leader.name}
+                    alt={`${leader.name}, ${leader.title} of Lukhdatar & Sons`}
                     fill
                     sizes="(max-width: 768px) 100vw, 45vw"
                     style={{ objectFit: 'cover', objectPosition: 'top center' }}

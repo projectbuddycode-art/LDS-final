@@ -12,6 +12,12 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        source: '/_next/static/media/:path*.mp4',
+        headers: [
+          { key: 'Accept-Ranges', value: 'bytes' },
+        ],
+      },
+      {
         source: '/media/:path*.(png|jpg|jpeg|webp|svg)',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },

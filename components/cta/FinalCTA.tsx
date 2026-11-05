@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { COMPANY } from '@/data/content'
+import Link from 'next/link'
 import { openQuoteModal } from '@/lib/quoteEvents'
 
 export default function FinalCTA() {
@@ -9,7 +9,7 @@ export default function FinalCTA() {
 
   useEffect(() => {
     let isUnmounted = false
-    let ctx: any
+    let ctx: { revert: () => void } | undefined
     const section = sectionRef.current
     if (!section) return
 
@@ -86,12 +86,12 @@ export default function FinalCTA() {
           >
             Request Equipment <span className="cta-arrow">↗</span>
           </button>
-          <a href="/capabilities" className="cta-btn" style={{ justifyContent: 'space-between', minHeight: '48px' }}>
+          <Link href="/capabilities" className="cta-btn" style={{ justifyContent: 'space-between', minHeight: '48px' }}>
             Our Services <span className="cta-arrow">↗</span>
-          </a>
-          <a href="/insights" className="cta-btn" style={{ justifyContent: 'space-between', minHeight: '48px' }}>
+          </Link>
+          <Link href="/insights" className="cta-btn" style={{ justifyContent: 'space-between', minHeight: '48px' }}>
             Projects &amp; Industries <span className="cta-arrow">↗</span>
-          </a>
+          </Link>
         </div>
 
         <div data-reveal style={{ marginTop: 'clamp(48px, 6vw, 80px)', display: 'flex', alignItems: 'center', gap: '20px' }}>

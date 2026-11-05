@@ -139,6 +139,7 @@ export default function ProductsEquipmentPage() {
             {EQUIPMENT_RANGE.map((item) => (
               <div
                 key={item.id}
+                className="vendor-equipment-card"
                 style={{
                   position: 'relative',
                   aspectRatio: '4/5',
@@ -181,6 +182,13 @@ export default function ProductsEquipmentPage() {
               </div>
             ))}
           </div>
+          <style>{`
+            @media (max-width: 768px) {
+              .vendor-equipment-card {
+                aspect-ratio: 16/10 !important;
+              }
+            }
+          `}</style>
         </div>
       </section>
 

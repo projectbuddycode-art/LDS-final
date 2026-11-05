@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://www.ldsinfrastructure.com'
+  const baseUrl = 'https://www.ldsinfo.in'
 
   const staticRoutes = [
     '',
@@ -26,11 +26,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ]
 
   const projectRoutes = [
-    '/projects/kohora-assam-substation',
-    '/projects/assam-hill-medical-college',
-    '/projects/sarojini-naidu-medical-hospital',
-    '/projects/shri-krishna-medical-college',
+    '/projects/taj-hotel',
     '/projects/sonotel',
+    '/projects/assam-medical-college',
+    '/projects/sarojini-naidu-hospital',
+    '/projects/skmc-medical-college',
+    '/projects/bihar-vidhan-sabha',
+    '/projects/warehouse-projects',
+    '/projects/kohora-substation',
+    '/projects/signature',
+    '/projects/shristinagar',
   ]
 
   const allRoutes = [...staticRoutes, ...capabilityRoutes, ...projectRoutes]

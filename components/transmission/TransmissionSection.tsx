@@ -15,7 +15,7 @@ export default function TransmissionSection() {
 
   useEffect(() => {
     let isUnmounted = false
-    let ctx: any
+    let ctx: { revert: () => void } | undefined
     const section = sectionRef.current
     if (!section) return
 

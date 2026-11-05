@@ -44,7 +44,7 @@ Would you like us to send your requirement to the LDS team?`,
 
 • **1997**: Formed in Kolkata by **Mr. Lalit Kumar Sureka** as an electrical goods supplier.
 • **2007**: Expanded into **Turnkey Electrical Contracting**.
-• **2013**: **Mr. Shree Mangalam Sureka** joined Lukhdatar & Sons. As the current owner of the company, he oversees project delivery.
+• **2013**: **Mr. Shree Mangalam Sureka** joined Lukhdatar & Sons. As the Managing Director of the company, he oversees project delivery.
 • **Present**: LDS undertakes turnkey electrical projects in both **Government and Private sectors**, delivering commercial, housing, industrial, public, and substation projects.
 
 From supplying electrical equipment to executing complete turnkey electrical projects, LDS has grown through experience, customer relationships, technical capability and project execution.
@@ -59,7 +59,7 @@ Would you like us to send your requirement to the LDS team?`,
     response: `**Leadership at Lukhdatar & Sons:**
 
 • **Mr. Lalit Kumar Sureka (Founder)**: Formed LDS in Kolkata in 1997 as an electrical goods supplier, establishing direct manufacturer distribution channels and high standards of electrical equipment supply.
-• **Mr. Shree Mangalam Sureka (Current Owner)**: Joined Lukhdatar & Sons in 2013. As the current owner of the company, he oversees project delivery.
+• **Mr. Shree Mangalam Sureka (Managing Director)**: Joined Lukhdatar & Sons in 2013. As the Managing Director of the company, he oversees project delivery.
 
 Would you like us to send your requirement to the LDS team?`,
     scrollTo: '#company',
@@ -267,7 +267,7 @@ Would you like us to send your requirement to the LDS team?`,
 
 • **Contact Persons**:
   Mr. Lalit Kumar Sureka (Founder)
-  Mr. Shree Mangalam Sureka (Current Owner)
+  Mr. Shree Mangalam Sureka (Managing Director)
 
 Would you like to submit your project requirements directly to the LDS team now?`,
     actions: ['SEND INQUIRY', 'DOWNLOAD CATALOG'],

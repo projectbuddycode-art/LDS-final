@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, memo, useCallback, useState } from 'react'
 import { prepareVideo, releaseVideo, safePause, safePlay } from '@/lib/videoPlayback'
+import AIVideoDisclosure, { type DisclosurePosition } from '@/components/AIVideoDisclosure'
 
 export interface LazyVideoProps extends React.VideoHTMLAttributes<HTMLVideoElement> {
   src: string
@@ -9,6 +10,9 @@ export interface LazyVideoProps extends React.VideoHTMLAttributes<HTMLVideoEleme
   aspectRatio?: string
   containerStyle?: React.CSSProperties
   preloadImmediate?: boolean
+  showAIDisclosure?: boolean
+  disclosurePosition?: DisclosurePosition
+  disclosureStyle?: React.CSSProperties
 }
 
 function LazyVideo({
@@ -17,6 +21,9 @@ function LazyVideo({
   aspectRatio,
   containerStyle,
   preloadImmediate = false,
+  showAIDisclosure = true,
+  disclosurePosition = 'top-right',
+  disclosureStyle,
   className,
   style,
   onError,
@@ -218,11 +225,17 @@ function LazyVideo({
         muted
         playsInline
         loop
-        preload={preloadImmediate ? 'auto' : 'metadata'}
+        preload={preloadImmediate ? 'auto' : mediaAttached ? 'metadata' : 'none'}
         onPlaying={handleVideoPlaying}
         onCanPlay={handleCanPlay}
         onLoadedData={handleLoadedData}
         onError={handleVideoError}
+        onVolumeChange={(e) => {
+          if (!e.currentTarget.muted || e.currentTarget.volume !== 0) {
+            e.currentTarget.muted = true
+            e.currentTarget.volume = 0
+          }
+        }}
         onWaiting={handleNoopMediaEvent}
         onStalled={handleNoopMediaEvent}
         onSuspend={handleNoopMediaEvent}
@@ -246,6 +259,13 @@ function LazyVideo({
         }}
         {...props}
       />
+
+      {showAIDisclosure && (
+        <AIVideoDisclosure
+          position={disclosurePosition}
+          style={disclosureStyle}
+        />
+      )}
     </div>
   )
 }

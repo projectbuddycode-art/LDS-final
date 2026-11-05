@@ -1,6 +1,9 @@
 const MAX_CONCURRENT_PLAYING = 4
 const playing = new Set<HTMLVideoElement>()
 
+export const AI_VIDEO_DISCLOSURE_TEXT =
+  'AI-generated visuals. Used for illustrative and presentation purposes.'
+
 /**
  * Configure video DOM element and attributes strictly for silent autoplay compliance across all browsers (Safari/Chrome/Firefox/Edge/iOS/Android).
  */
@@ -9,6 +12,7 @@ export function prepareVideo(video: HTMLVideoElement | null) {
   try {
     video.muted = true
     video.defaultMuted = true
+    video.volume = 0
     video.playsInline = true
     video.setAttribute('playsinline', '')
     video.setAttribute('webkit-playsinline', '')

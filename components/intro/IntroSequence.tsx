@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { MEDIA } from '@/data/media'
 import { prepareVideo, safePlay } from '@/lib/videoPlayback'
+import AIVideoDisclosure from '@/components/AIVideoDisclosure'
 
 interface IntroSequenceProps {
   onComplete: () => void
@@ -345,6 +346,16 @@ export default function IntroSequence({ onComplete }: IntroSequenceProps) {
         <span>SKIP INTRO</span>
         <span style={{ fontSize: '13px', lineHeight: 1, color: 'var(--accent-gold)' }}>→</span>
       </button>
+
+      {/* ── AI-Generated Visuals Disclosure ── */}
+      <AIVideoDisclosure
+        position="bottom-left"
+        style={{
+          bottom: 'max(18px, env(safe-area-inset-bottom, 18px))',
+          left: 'max(20px, env(safe-area-inset-left, 20px))',
+          zIndex: 20,
+        }}
+      />
 
       <style>{`
         .intro-fullscreen-overlay {

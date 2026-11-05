@@ -1,17 +1,39 @@
 import Link from 'next/link'
 import PageLayout from '@/components/layout/PageLayout'
 import BackNav from '@/components/navigation/BackNav'
+import LazyVideo from '@/components/LazyVideo'
 import { PROJECT_CASE_STUDIES } from '@/data/content'
+import { MEDIA } from '@/data/media'
+
+const PROJECT_MEDIA_MAP: Record<string, string> = {
+  tajHotel:          MEDIA.projects.tajHotel,
+  sonotel:           MEDIA.projects.sonotel,
+  assamHill:         MEDIA.projects.assamHill,
+  sarojiniHospital:  MEDIA.projects.sarojiniHospital,
+  skmcMedical:       MEDIA.projects.skmcMedical,
+  biharVidhanSabha:  MEDIA.projects.biharVidhanSabha,
+  warehouseProjects: MEDIA.projects.warehouseProjects,
+  kohoraSubstation:  MEDIA.projects.kohoraSubstation,
+  signature:         MEDIA.projects.signature,
+  shristinagar:      MEDIA.projects.shristinagar,
+}
+
+const PROJECT_POSTER_MAP: Record<string, string> = {
+  tajHotel:          '/media/posters/taj-hotel.jpg',
+  sonotel:           '/media/posters/sonotel-project.jpg',
+  assamHill:         '/media/posters/aasam-hill-medical-college.jpg',
+  sarojiniHospital:  '/media/posters/sarojini-naidu-medical-hospital.jpg',
+  skmcMedical:       '/media/posters/shree-krishna-medical.jpg',
+  biharVidhanSabha:  '/media/posters/bihar-vidhan-sabha.jpg',
+  warehouseProjects: '/media/posters/warehouse-projects.jpg',
+  kohoraSubstation:  '/media/posters/kohora-substation.jpg',
+  signature:         '/media/posters/signature.jpg',
+  shristinagar:      '/media/posters/shristinagar.jpg',
+}
 
 // static generation parameters for Next.js build optimization
 export function generateStaticParams() {
-  return [
-    { id: 'kohora-assam-substation' },
-    { id: 'assam-hill-medical-college' },
-    { id: 'sarojini-naidu-medical-hospital' },
-    { id: 'shri-krishna-medical-college' },
-    { id: 'sonotel' }
-  ]
+  return Object.keys(PROJECT_CASE_STUDIES).map((id) => ({ id }))
 }
 
 interface PageProps {
@@ -47,7 +69,7 @@ export default async function ProjectCaseStudyPage({ params }: PageProps) {
           <BackNav fallbackHref="/#projects" label="Project Portfolio" />
           <div className="section-label">
             <span className="section-label-bullet" />
-            <span className="t-label">Case Study 0{Object.keys(PROJECT_CASE_STUDIES).indexOf(id) + 1}</span>
+            <span className="t-label">Project Case Study · {project.sector}</span>
           </div>
           <h1 className="t-headline" style={{ fontSize: 'clamp(32px, 4.5vw, 56px)', lineHeight: 1.1, marginBottom: '16px' }}>
             {project.title}
@@ -58,6 +80,22 @@ export default async function ProjectCaseStudyPage({ params }: PageProps) {
       {/* Main content */}
       <section className="section-py" style={{ background: 'var(--bg-secondary)' }}>
         <div className="site-container">
+          {PROJECT_MEDIA_MAP[project.mediaKey] && (
+            <div
+              className="media-frame"
+              style={{
+                aspectRatio: '16/9',
+                marginBottom: '40px',
+                border: '1px solid var(--line-soft)',
+              }}
+            >
+              <LazyVideo
+                src={PROJECT_MEDIA_MAP[project.mediaKey]}
+                poster={PROJECT_POSTER_MAP[project.mediaKey] || '/media/posters/hero-bg.jpg'}
+                aria-label={project.title}
+              />
+            </div>
+          )}
           
           {/* Metadata Grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))', gap: '32px', marginBottom: '48px', borderBottom: '1px solid var(--line)', paddingBottom: '32px' }}>

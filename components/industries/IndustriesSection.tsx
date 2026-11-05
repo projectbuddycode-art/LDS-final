@@ -10,6 +10,7 @@ import {
   safePause,
   safePlay,
 } from '@/lib/videoPlayback'
+import AIVideoDisclosure from '@/components/AIVideoDisclosure'
 
 const OBJECT_POSITIONS: Record<string, string> = {
   manufacturing:        'center 22%',
@@ -516,6 +517,11 @@ export default function IndustriesSection() {
                       {industry.label}
                     </div>
                   </div>
+
+                  <AIVideoDisclosure
+                    position="top-right"
+                    style={{ top: '12px', right: '12px', zIndex: 4 }}
+                  />
                 </div>
               )
             })}
@@ -681,6 +687,11 @@ export default function IndustriesSection() {
                       {industry.label}
                     </div>
                   </div>
+
+                  <AIVideoDisclosure
+                    position="top-right"
+                    style={{ top: '12px', right: '12px', zIndex: 4 }}
+                  />
                 </div>
               )
             })}

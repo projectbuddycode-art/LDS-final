@@ -10,7 +10,7 @@ export default function EquipmentSection() {
 
   useEffect(() => {
     let isUnmounted = false
-    let ctx: any
+    let ctx: { revert: () => void } | undefined
     const section = sectionRef.current
     if (!section) return
 
@@ -167,6 +167,11 @@ export default function EquipmentSection() {
         }
         .equipment-card:hover .equipment-card-media {
           transform: scale(1.03);
+        }
+        @media (max-width: 768px) {
+          .equipment-card {
+            aspect-ratio: 16/10 !important;
+          }
         }
         @media (max-width: 540px) {
           #equipment-grid {

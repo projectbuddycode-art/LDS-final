@@ -10,9 +10,13 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.ldsinfo.in'),
   title: 'Lukhdatar & Sons | Turnkey Electrical Infrastructure & Contracting',
   description:
     'Lukhdatar & Sons delivers complete electrical infrastructure solutions: turnkey electrical SITC contracting, underground cable systems up to 66KV, substations up to 220KV, and overhead transmission lines up to 400KV across Government and Private sectors.',
+  alternates: {
+    canonical: 'https://www.ldsinfo.in',
+  },
   keywords: [
     'Lukhdatar & Sons',
     'electrical infrastructure contractor',
@@ -44,6 +48,7 @@ export const metadata: Metadata = {
     title: 'Lukhdatar & Sons | Turnkey Electrical Infrastructure',
     description:
       'Turnkey electrical SITC, high-voltage substations up to 220KV, transmission lines up to 400KV, and underground cable networks up to 66KV.',
+    url: 'https://www.ldsinfo.in',
     siteName: 'Lukhdatar & Sons',
     locale: 'en_IN',
     type: 'website',
@@ -59,28 +64,32 @@ const orgSchema = {
   '@graph': [
     {
       '@type': 'Organization',
-      '@id': 'https://ldsinfrastructure.com/#organization',
+      '@id': 'https://www.ldsinfo.in/#organization',
+      'url': 'https://www.ldsinfo.in',
       'name': 'Lukhdatar & Sons',
       'legalName': 'Lukhdatar & Sons',
       'foundingDate': '1997',
       'founder': {
         '@type': 'Person',
         'name': 'Mr. Lalit Kumar Sureka',
+        'jobTitle': 'Founder',
       },
       'employee': [
         {
           '@type': 'Person',
           'name': 'Mr. Shree Mangalam Sureka',
-          'jobTitle': 'Current Owner',
+          'jobTitle': 'Managing Director',
         },
       ],
       'address': {
         '@type': 'PostalAddress',
+        'streetAddress': 'Eight Mandir Street, 4th Floor',
+        'postalCode': '700073',
         'addressLocality': 'Kolkata',
         'addressRegion': 'West Bengal',
         'addressCountry': 'IN',
       },
-      'email': 'info@ldsinfrastructure.com',
+      'email': ['lukhdatar_sons@rediffmail.com', 'ukhdatar6sons@gmail.com'],
       'description':
         'Lukhdatar & Sons is a turnkey electrical infrastructure contractor established in 1997 in Kolkata. Delivering complete SITC projects across Government and Private sectors.',
       'knowsAbout': [
@@ -95,11 +104,11 @@ const orgSchema = {
     },
     {
       '@type': 'WebSite',
-      '@id': 'https://ldsinfrastructure.com/#website',
-      'url': 'https://ldsinfrastructure.com',
+      '@id': 'https://www.ldsinfo.in/#website',
+      'url': 'https://www.ldsinfo.in',
       'name': 'Lukhdatar & Sons',
       'publisher': {
-        '@id': 'https://ldsinfrastructure.com/#organization',
+        '@id': 'https://www.ldsinfo.in/#organization',
       },
     },
   ],

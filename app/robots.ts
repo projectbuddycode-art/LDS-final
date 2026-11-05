@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: '*',
       allow: '/',
     },
-    sitemap: 'https://www.ldsinfrastructure.com/sitemap.xml',
+    sitemap: 'https://www.ldsinfo.in/sitemap.xml',
   }
 }

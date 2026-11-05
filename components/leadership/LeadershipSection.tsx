@@ -25,7 +25,7 @@ const FOUNDER_STORY = [
 const SHREE_MILESTONE = {
   year: '2013',
   label: 'Shree Joined Lukhdatar & Sons',
-  body: 'As the current owner of the company, he oversees project delivery.',
+  body: 'As the Managing Director of the company, he oversees project delivery.',
 }
 
 const MD_STORY = [
@@ -40,7 +40,7 @@ export default function LeadershipSection() {
 
   useEffect(() => {
     let isUnmounted = false
-    let ctx: any
+    let ctx: { revert: () => void } | undefined
     const section = sectionRef.current
     if (!section) return
 
@@ -173,7 +173,7 @@ export default function LeadershipSection() {
               >
                 <Image
                   src={MEDIA.leadership.md}
-                  alt="Mr. Shree Mangalam Sureka, current owner of Lukhdatar & Sons"
+                  alt="Mr. Shree Mangalam Sureka, Managing Director of Lukhdatar & Sons"
                   fill
                   sizes="(max-width: 768px) 90vw, 28vw"
                   style={{ objectFit: 'cover', objectPosition: 'top center' }}
@@ -193,7 +193,7 @@ export default function LeadershipSection() {
                 <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.01em', lineHeight: 1.3 }}>
                   Mr. Shree Mangalam Sureka
                 </div>
-                <div className="t-label" style={{ color: 'var(--accent-gold)', marginTop: '5px' }}>Current Owner</div>
+                <div className="t-label" style={{ color: 'var(--accent-gold)', marginTop: '5px' }}>Managing Director</div>
               </div>
             </div>
           </div>

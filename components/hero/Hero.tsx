@@ -10,7 +10,7 @@ export default function Hero() {
   // ── Premium cinematic text reveal ─────────────────────────────────────────
   useEffect(() => {
     let isUnmounted = false
-    let ctx: any
+    let ctx: { revert: () => void } | undefined
     const section = sectionRef.current
     if (!section) return
 
@@ -97,6 +97,11 @@ export default function Hero() {
           src={MEDIA.heroVideo}
           poster="/media/posters/hero-bg.jpg"
           preloadImmediate={true}
+          disclosurePosition="bottom-right"
+          disclosureStyle={{
+            bottom: '12px',
+            right: 'clamp(20px, 4.5vw, 64px)',
+          }}
           autoPlay
           muted
           playsInline

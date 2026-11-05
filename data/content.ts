@@ -31,10 +31,10 @@ export const LEADERSHIP = [
   {
     id: 'md',
     name: 'Mr. Shree Mangalam Sureka',
-    title: 'Current Owner',
+    title: 'Managing Director',
     imageKey: 'md' as const,
     since: '2013',
-    bio: 'Mr. Shree Mangalam Sureka joined Lukhdatar & Sons in 2013. As the current owner of the company, he oversees project delivery.',
+    bio: 'Mr. Shree Mangalam Sureka joined Lukhdatar & Sons in 2013. As the Managing Director of the company, he oversees project delivery.',
   },
 ]
 
@@ -55,7 +55,7 @@ export const TIMELINE = [
     year: '2013',
     label: 'Shree Joined Lukhdatar & Sons',
     description:
-      'As the current owner of the company, he oversees project delivery.',
+      'As the Managing Director of the company, he oversees project delivery.',
   },
   {
     year: 'Present',
@@ -518,6 +518,36 @@ export const CAPABILITIES_DATA: Record<string, CapabilityDetail> = {
     ctaText: 'Send Inquiry',
     ctaHref: '/vendor-capabilities?type=Industrial'
   },
+  'healthcare-electrical-infrastructure': {
+    title: 'Healthcare & Medical Campus Electrification',
+    deliverables: [
+      'Complete electrical SITC for medical colleges, multi-specialty hospitals, and clinical research campuses.',
+      'Primary HT/LT distribution networks, transformer yards, VCB switchboards, and rising mains.',
+      'Standby generator synchronization (DG/AMF), capacitor banks, isolated earthing grids, and low-voltage auxiliary systems.'
+    ],
+    scopes: [
+      'Detailed electrical load planning for academic blocks, hospital wards, clinical spaces, and laboratories.',
+      'Campus-wide overhead and underground cable tray routing, main power switchboards, and sub-distribution panels.',
+      'General illumination, external yard lighting, emergency power changeover circuits, and lightning protection.'
+    ],
+    specs: [
+      'Distribution: HT VCB panels, distribution transformers, LT PCC/MCC panels, APFC capacitor banks, and bus ducts.',
+      'Continuity & Safety: Automated transfer switches, AMF panels, DG synchronization, and isolated high-conductivity grounding grids.',
+      'Auxiliary Networks: Structured cabling support for fire detection, alarm integration, and public address systems.'
+    ],
+    environments: [
+      'Government and institutional medical colleges and teaching hospitals.',
+      'Active healthcare facilities requiring phased modernization and structured execution protocols.',
+      'Multi-block clinical and biomedical research campuses.'
+    ],
+    lifecycle: [
+      'Pre-Commissioning: Earth loop impedance testing, transformer dielectric checks, and relay calibration.',
+      'Commissioning: Standby generator changeover verification, load balancing, and statutory safety clearances.',
+      'Maintenance: Preventative switchgear servicing, thermographic inspections, and ground resistance audits.'
+    ],
+    ctaText: 'Send Inquiry',
+    ctaHref: '/vendor-capabilities?type=Healthcare'
+  },
   'warehouse-electrification': {
     title: 'Warehouse Electrification',
     deliverables: [
@@ -640,8 +670,44 @@ export const PROJECT_CASE_STUDIES: Record<string, CaseStudyDetail> = {
     outcome: 'Successfully commissioned the 2 × 3.15 MVA complete substation with control room and 9 VCB panels at Kohora, Assam in 100 working days.',
     mediaKey: 'kohoraSubstation'
   },
+  'kohora-substation': {
+    title: 'Kohora, Assam Substation',
+    client: 'Utility Infrastructure Project',
+    sector: 'Substation',
+    scope: 'Turnkey delivery of a 2 × 3.15 MVA Substation incorporating a dedicated Control Room and 9 VCB Panels.',
+    engineering: [
+      'Completed layout engineering tailored to challenging site terrain conditions in Assam.',
+      'Procured and erected utility-grade transformers, custom VCB panels, and auxiliary systems.',
+      'Constructed complete civil foundations, gantry structural members, and underground cable ducts.'
+    ],
+    testing: [
+      'Conducted comprehensive insulation resistance testing and high-voltage cable sheath checks.',
+      'Calibrated protection relay settings and verified electrical interlocking controls.',
+      'Executed vacuum circuit breaker contact resistance and timing validation tests.'
+    ],
+    outcome: 'Successfully commissioned the 2 × 3.15 MVA complete substation with control room and 9 VCB panels at Kohora, Assam in 100 working days.',
+    mediaKey: 'kohoraSubstation'
+  },
   'assam-hill-medical-college': {
-    title: 'Assam Hill Medical College',
+    title: 'Assam Hill Medical College & Research Institute',
+    client: 'Assam Hill Medical College & Research Institute',
+    sector: 'Healthcare / Medical',
+    scope: 'Complete electrical SITC (Supply, Installation, Testing & Commissioning) for the medical college and research campus.',
+    engineering: [
+      'Executed detailed electrical design and load planning for academic blocks, hospital wards, and research laboratories.',
+      'Installed main HT distribution systems, transformer yards, and LT rising mains.',
+      'Laid campus-wide power distribution cables, cable tray networks, and lighting sub-distribution boards.'
+    ],
+    testing: [
+      'Conducted earth loop impedance testing across critical clinical spaces and hospital rooms.',
+      'Verified standby generator synchronisation controls and AMF panel operation.',
+      'Tested low-voltage auxiliary networks including fire detection and public address systems.'
+    ],
+    outcome: 'Delivered an integrated, code-compliant electrical distribution network providing dependable power for critical medical operations.',
+    mediaKey: 'assamHill'
+  },
+  'assam-medical-college': {
+    title: 'Assam Hill Medical College & Research Institute',
     client: 'Assam Hill Medical College & Research Institute',
     sector: 'Healthcare / Medical',
     scope: 'Complete electrical SITC (Supply, Installation, Testing & Commissioning) for the medical college and research campus.',
@@ -659,6 +725,24 @@ export const PROJECT_CASE_STUDIES: Record<string, CaseStudyDetail> = {
     mediaKey: 'assamHill'
   },
   'sarojini-naidu-medical-hospital': {
+    title: 'Sarojini Naidu Medical Hospital, Agra',
+    client: 'Sarojini Naidu Medical Hospital',
+    sector: 'Healthcare / Medical',
+    scope: 'Turnkey SITC of electrical installations and primary power distribution switchboards.',
+    engineering: [
+      'Engineered localized power distribution boards to support medical equipment electrical loads.',
+      'Installed capacitor banks, power distribution panels, bus ducts, and high-conductivity grounding grids.',
+      'Routed cabling through active healthcare facility areas with structured execution protocols.'
+    ],
+    testing: [
+      'Performed transformer winding resistance testing and dielectric strength checks.',
+      'Verified automated transfer switch timings and emergency power changeovers.',
+      'Tested lightning protection networks and earth pit ground resistance levels.'
+    ],
+    outcome: 'Successfully modernized the healthcare facility infrastructure, improving power factor efficiency and operational safety standards.',
+    mediaKey: 'sarojiniHospital'
+  },
+  'sarojini-naidu-hospital': {
     title: 'Sarojini Naidu Medical Hospital, Agra',
     client: 'Sarojini Naidu Medical Hospital',
     sector: 'Healthcare / Medical',
@@ -694,6 +778,24 @@ export const PROJECT_CASE_STUDIES: Record<string, CaseStudyDetail> = {
     outcome: 'Completed the campus electrical infrastructure within project deadlines, satisfying all statutory safety clearance standards.',
     mediaKey: 'skmcMedical'
   },
+  'skmc-medical-college': {
+    title: 'Shri Krishna Medical College, Muzaffarpur',
+    client: 'Shri Krishna Medical College',
+    sector: 'Healthcare / Medical',
+    scope: 'Complete electrical SITC encompassing campus power distribution and illumination installations.',
+    engineering: [
+      'Structured overhead and underground cable tray layouts and HT/LT power distribution networks.',
+      'Erected transformers, HT VCB panels, and sub-distribution boards across campus blocks.',
+      'Installed general illumination fixtures, external yard lighting, and emergency lighting circuits.'
+    ],
+    testing: [
+      'Tested cable insulation values and conducted high-potential (hipot) cable testing.',
+      'Calibrated overcurrent, short circuit, and earth fault protection relay controls.',
+      'Validated earth grid connectivity and grounding continuity across all buildings.'
+    ],
+    outcome: 'Completed the campus electrical infrastructure within project deadlines, satisfying all statutory safety clearance standards.',
+    mediaKey: 'skmcMedical'
+  },
   'sonotel': {
     title: 'Sonotel',
     client: 'Sonotel Hotels',
@@ -711,5 +813,95 @@ export const PROJECT_CASE_STUDIES: Record<string, CaseStudyDetail> = {
     ],
     outcome: 'Delivered a code-compliant, reliable hospitality electrical installation supporting continuous guest operations.',
     mediaKey: 'sonotel'
+  },
+  'taj-hotel': {
+    title: 'Taj Group of Hotels',
+    client: 'Taj Group of Hotels',
+    sector: 'Hospitality',
+    scope: 'Electrical infrastructure installations supporting luxury hospitality operations with dependable primary distribution and backup power coordination.',
+    engineering: [
+      'Executed primary electrical distribution, switchboard installations, and structured power routing for hospitality operations.',
+      'Coordinated backup power distribution and distribution panel layouts to maintain uninterrupted guest and facility services.',
+      'Installed earthing and protective switchgear assemblies aligned with hospitality safety standards.'
+    ],
+    testing: [
+      'Conducted insulation resistance and phase balance checks across primary and secondary distribution circuits.',
+      'Verified protective relay settings, circuit breaker tripping operations, and backup changeover coordination.',
+      'Performed earth resistance and thermal termination inspections prior to handover.'
+    ],
+    outcome: 'Delivered dependable electrical infrastructure supporting continuous luxury hospitality operations.',
+    mediaKey: 'tajHotel'
+  },
+  'bihar-vidhan-sabha': {
+    title: 'Bihar Vidhan Sabha',
+    client: 'Bihar Vidhan Sabha (State Legislative Complex)',
+    sector: 'Government / Institutional',
+    scope: 'Turnkey electrical infrastructure for the state legislative complex, incorporating primary distribution panels, secure power routing, and backup synchronization.',
+    engineering: [
+      'Engineered and installed primary HT/LT distribution switchboards and dedicated feeder networks for institutional buildings.',
+      'Executed structured underground and internal power cabling, distribution boards, and illumination systems.',
+      'Integrated standby power synchronization panels and comprehensive earthing and lightning protection networks.'
+    ],
+    testing: [
+      'Conducted high-voltage insulation tests, breaker contact resistance checks, and relay calibration.',
+      'Verified standby power changeover response and load distribution balance across feeder pillars.',
+      'Completed statutory inspection documentation and safety compliance verification.'
+    ],
+    outcome: 'Commissioned reliable, code-compliant institutional electrical infrastructure meeting Government sector specifications.',
+    mediaKey: 'biharVidhanSabha'
+  },
+  'warehouse-projects': {
+    title: 'Warehouse Electrification Projects',
+    client: 'Industrial & Logistics Facilities',
+    sector: 'Industrial / Infrastructure',
+    scope: 'Industrial power distribution, overhead cable tray installations, high-bay illumination, external yard high-masts, and lightning protection for major logistics facilities.',
+    engineering: [
+      'Fabricated and erected heavy-duty perforated and ladder overhead cable tray networks across large-span warehouse structures.',
+      'Installed main power distribution boards, motor control panels, high-bay industrial lighting, and external yard high-mast towers.',
+      'Constructed perimeter earthing grids and lightning arrestor systems for structural and equipment protection.'
+    ],
+    testing: [
+      'Performed circuit continuity, insulation resistance, and load balancing trials across warehouse distribution feeders.',
+      'Verified illumination levels across storage bays and external loading yards.',
+      'Tested earth pit resistance values and lightning protection continuity.'
+    ],
+    outcome: 'Delivered durable, high-efficiency warehouse electrical and illumination systems built for continuous logistics operations.',
+    mediaKey: 'warehouseProjects'
+  },
+  'signature': {
+    title: 'Prabhatam Heights',
+    client: 'Prabhatam Heights Residential Development',
+    sector: 'Residential / Township',
+    scope: 'Multi-point HT/LT power distribution, transformer yards, LT control panels, and sub-metering grids for multi-storey residential living.',
+    engineering: [
+      'Installed transformer yard assemblies, HT switchgear, and main LT power control panels.',
+      'Executed rising main busbars, vertical cable shaft routing, and multi-point residential sub-metering distribution boards.',
+      'Integrated common-area illumination, pump room motor control panels, and building earthing systems.'
+    ],
+    testing: [
+      'Conducted transformer dielectric, ratio, and insulation resistance testing prior to energisation.',
+      'Verified feeder protection coordination, phase balancing, and earthing continuity across residential towers.',
+      'Tested standby generator backup changeover for essential residential services.'
+    ],
+    outcome: 'Completed safe, structured HT/LT residential power distribution infrastructure supporting multi-storey occupancy.',
+    mediaKey: 'signature'
+  },
+  'shristinagar': {
+    title: 'Shristinagar Township Electrification',
+    client: 'Shristinagar Integrated Township',
+    sector: 'Residential / Township',
+    scope: 'Outdoor township electrification including weather-proof LT feeder pillar boards, underground distribution loops, and street lighting networks.',
+    engineering: [
+      'Laid underground HT/LT distribution cable loops with trenching, sand cushioning, and route markers across the township.',
+      'Installed outdoor weather-proof feeder pillar boards, distribution transformers, and section switchboards.',
+      'Erected street lighting poles, external illumination circuits, and distributed earthing pits.'
+    ],
+    testing: [
+      'Performed underground cable insulation resistance and high-potential testing prior to backfilling and energisation.',
+      'Verified feeder pillar switchgear protection and outdoor enclosure weatherproofing.',
+      'Tested street lighting control circuits and earthing network resistance across the township.'
+    ],
+    outcome: 'Established a dependable township-wide electrical distribution and outdoor illumination network.',
+    mediaKey: 'shristinagar'
   }
 }

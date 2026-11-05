@@ -8,6 +8,8 @@ const {
   saveInquiryBeforeNotification,
 } = require('../lib/notificationDelivery.ts')
 const { validateInquiry } = require('../lib/inquiry.ts')
+const { LEADERSHIP, PROJECTS, PROJECT_CASE_STUDIES, CAPABILITIES_DATA } = require('../data/content.ts')
+const { AI_VIDEO_DISCLOSURE_TEXT } = require('../lib/videoPlayback.ts')
 
 const record = {
   referenceId: 'LDS-TEST-REFERENCE',
@@ -183,4 +185,32 @@ test('invalid reply-to is never sent to the provider', async () => {
   )
 
   assert.equal('replyTo' in sentPayload, false)
+})
+
+test('leadership data designates Mr. Shree Mangalam Sureka as Managing Director and Mr. Lalit Kumar Sureka as Founder', () => {
+  const founder = LEADERSHIP.find((l) => l.id === 'founder')
+  const md = LEADERSHIP.find((l) => l.id === 'md')
+  assert.equal(founder.name, 'Mr. Lalit Kumar Sureka')
+  assert.equal(founder.title, 'Founder')
+  assert.equal(md.name, 'Mr. Shree Mangalam Sureka')
+  assert.equal(md.title, 'Managing Director')
+  assert.equal(md.bio.includes('Managing Director'), true)
+  assert.equal(md.bio.toLowerCase().includes('current owner'), false)
+})
+
+test('all homepage portfolio projects resolve to valid case study pages and healthcare capability exists', () => {
+  for (const project of PROJECTS) {
+    assert.ok(
+      PROJECT_CASE_STUDIES[project.id],
+      `Missing PROJECT_CASE_STUDIES entry for project.id="${project.id}"`
+    )
+  }
+  assert.ok(CAPABILITIES_DATA['healthcare-electrical-infrastructure'])
+})
+
+test('AI video disclosure uses exact required wording', () => {
+  assert.equal(
+    AI_VIDEO_DISCLOSURE_TEXT,
+    'AI-generated visuals. Used for illustrative and presentation purposes.'
+  )
 })
